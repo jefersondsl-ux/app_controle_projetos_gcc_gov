@@ -1,0 +1,53 @@
+Nota Versão 3 - app_gcc_gov_v3
+
+1) Objetivo
+- Criar uma nova versão do app_gcc_gov_v2 como versão 3.
+- Replicar o projeto atual em:
+  C:\Users\Z181040\OneDrive - Claro SA\BASES\Projetos_GOV\app_gcc_gov_v3
+- Ajustar o app para remover as páginas:
+  - pages/cadastro_projeto.py
+  - pages/atualizar_diario.py
+- O foco será usar o app PyQt5 de entrada e saída como base para a nova versão.
+- Não excluir nada: apenas replicar e evoluir.
+
+2) Onde está o novo projeto
+- Nova pasta criada em OneDrive:
+  C:\Users\Z181040\OneDrive - Claro SA\BASES\Projetos_GOV\app_gcc_gov_v3
+
+3) O que será ajustado
+- App principal: app.py
+- Remover ou comentar as rotas/páginas de cadastro e atualização do diário
+- Manter as demais páginas e serviços que não dependem desses fluxos
+- Planejar a migração dos dados de cadastro/diário para o app PyQt5 de entrada e saída
+
+4) Como rodar a versão 3 em desenvolvimento
+A) Abrir o terminal na pasta:
+```powershell
+cd "C:\Users\Z181040\OneDrive - Claro SA\BASES\Projetos_GOV\app_gcc_gov_v3"
+```
+B) Ativar ambiente virtual separado (ver nota de ambiente virtual)
+C) Instalar dependências:
+```powershell
+pip install -r requirements.txt
+```
+D) Rodar o app Streamlit:
+```powershell
+streamlit run app.py
+```
+
+5) Como validar
+- O app abre no navegador sem erros
+- A página de cadastro de projeto não aparece ou está desabilitada
+- A página de atualização de diário não aparece ou está desabilitada
+- As demais páginas continuam funcionando
+- Os dados ainda podem ser carregados das bases do OneDrive
+
+6) Próximos passos
+- Criar uma nota específica para o plano de migração de cadastro e diário
+- Criar um branch Git separado para a versão 3
+- Criar um ambiente virtual próprio para este novo projeto
+
+7) Observações
+- Não apagar `app_gcc_gov_v2`; manter como histórico.
+- Em OneDrive, a versão 3 é apenas uma cópia de trabalho inicial.
+- Depois, podemos pensar em um refactor maior que una as bases PyQt5 + Streamlit.

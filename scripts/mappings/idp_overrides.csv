@@ -1,0 +1,4 @@
+idp_source,idp_target,reason
+2024-0383-02,2024-383-01,normalização de IDP com zero à esquerda
+2024-0253-01,2024-253-01,normalização de IDP com zero à esquerda
+2024-0692-02,2024-692-01,correção de formato CONAB

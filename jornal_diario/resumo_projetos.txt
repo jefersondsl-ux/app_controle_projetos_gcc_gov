@@ -1,0 +1,252 @@
+🏛️ Não informado - VES-4
+📘 RESUMO DO PROJETO • Serviços de acesso IP permanente, dedicado e exclusivo entre a rede
+de dados da Câmara dos Deputados e a rede mundial de computadores (Internet),
+mediante implantação de 2 (dois) enlaces de comunicação de dados, podendo ter
+velocidades de 3000 a 6000 Mbps, compreendendo instalação, configuração,
+ativação, suporte técnico, gerenciamento, e serviço de segurança Anti-DDoS, pelo
+período de 12 (doze) meses. • IDP: 2025-0813-01 | Valor Total: R$ 3.950.000,00 | Mensal: R$ 47.024,00 • GCC: Bruno | GP: Adyl | Assinatura: 30/09/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Aquisição Equipamentos PJE
+📊 PLACAR • Produzidos: 0 | Backlog: 0 | Internalizados/Cadastrados: 0
+
+🏛️ 1249/26 - ESP - CDP - DOCAS DO PARA SD-WAN - VES-9
+📘 RESUMO DO PROJETO • Rede SD-WAN + Link BLD com redundância + DDoS : Concentrador 200M + 5 Sites. • IDP: 2025-0643-01 | Valor Total: R$ 1.802.276,00 | Mensal: R$ 30.038,00 • GCC: Rodrigo | GP: Munique | Assinatura: 06/12/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Aquisição Equipamentos PJE • Rollout não iniciado
+📊 PLACAR • Produzidos: 0 | Backlog: 11 | Internalizados/Cadastrados: 11
+
+🏛️ Cadastrar - VES-6
+📘 RESUMO DO PROJETO • Backbone Regional da ATN-Br na área do CINDACTA I, CINDACTA II, CINDACTA III, CINDACTA IV e CRCEA-SE E, interligando-os aos seus sítios de interesse operacional, bem como a interligação dos Backbones Regionais entre si e com o PAME-RJ, DTCEATM-RJ, ICEA e CIMAER.
+LOTE 1 e 2: CINDACTA III até 135 Mbps - 34 pontos
+LOTE 3 e 4: CINDACTA II até 150 Mbps  - 43 pontos
+LOTE 9 e 10: CINDACTA IV até 140 Mbps - 39 pontos. • IDP: 2025-0026-01 | Valor Total: R$ 42.710.245,00 | Mensal: R$ 711.837,00 • GCC: Leila | GP: Ana Paula | Assinatura: Não informado
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Aquisição Equipamentos PJE
+📊 PLACAR • Produzidos: 0 | Backlog: 0 | Internalizados/Cadastrados: 0
+
+🏛️ 1230/26 - ESP - MIN. PUB. ES - MIN. PUB. ES_SDWAN - VES-6
+📘 RESUMO DO PROJETO • Contratação de uma solução completa para ampliação da segurança de rede do Ministério Público do Estado do Espírito Santo (MPES), envolvendo fornecimento, instalação e gestão de links dedicados, tecnologia SD-WAN, firewalls, equipamentos associados e upgrades de capacidade ao longo da vigência contratual. A iniciativa contempla conectividade em alta disponibilidade para a sede, atendimento às promotorias, implantação de cluster SD-WAN, entregáveis técnicos como GRC, Projeto Executivo e As-Built
+
+* SDWAN com Segurança – 76 sites remotos + 10 pontos futuros e Concentrador em HA;
+* Links Internet – Concentrador redundante;
+* Previsão de UPGrade a partir do Ano 3: 10 poontos no grupo 1. • IDP: 2025-0155-01 | Valor Total: R$ nan | Mensal: R$ nan • GCC: Leila | GP: Não informado | Assinatura: Não informado
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Aquisição Equipamentos PJE • Rollout não iniciado • Upgrade pendente
+📊 PLACAR • Produzidos: 0 | Backlog: 67 | Internalizados/Cadastrados: 67
+
+🏛️ 1198/25 - ESP - SEFAZ-AM - SEFA-AM 2025 - VES-9
+📘 RESUMO DO PROJETO • Contrato assinado em 07/11/2025 Mudança de GP , Ângela passou o projeto para o Robinson. Em 06/01 foi acionado o Edvandro para alteração do projeto de acesso. PJE conseguiu um roteador emprestado para entrega do BLD no site central, previsão 19/01. Demais equipamentos em aquisição. Kick-off de acesso realizado em 15/01/26. Upgrade SEFA (apenas uma via) previsto para 06/02. Site PRODAM na sequência com o CPE que será retirado da SEFA.  03/12 Site da SEFAZ como upgrade concluído do link principal de 1G (pendente a entrega da redundância, previsão 27/02). O upgrade do site da PRODAN está previsto para 13/02, de 50 para 500 M. Será necessário retirar o CPE antigo da SEFAZ (provisório) para ativá‑lo na PRODAN. cod_cir = 1580607 – Designação: MNS/IP/02994 OI – 10516200/26. • IDP: 2025-0013-01 | Valor Total: R$ 2.002.990,00 | Mensal: R$ 166.916,00 • GCC: Rodrigo | GP: Robinson | Assinatura: 07/11/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Aquisição Equipamentos PJE • Rollout concluído • Upgrade pendente • Troca de CPE pendente
+📊 PLACAR • Produzidos: 2 | Backlog: 0 | Internalizados/Cadastrados: 2
+
+🏛️ 1205/25 - ESP - GOIAS MP PROC - MPGO - UCC - VES-9
+📘 RESUMO DO PROJETO • PABX em nuvem, incluindo serviço LDI e 0800, com fornecimento de Telefones VOIPs e Headsets, 1.479 implantados imediatamente, podendo chegar até 4000 pontos de comunicação.. • IDP: 2025-0378-01 | Valor Total: R$ 6.880.726,00 | Mensal: R$ 114.679,00 • GCC: Rodrigo | GP: Renata | Assinatura: 15/10/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Aquisição Equipamentos PJE • Rollout em andamento
+📊 PLACAR • Produzidos: 18 | Backlog: 38 | Internalizados/Cadastrados: 56
+
+🏛️ 1168/25 - ESP - DEF.PUB.UNIAO - ATIVACAO BLD - VES-1
+📘 RESUMO DO PROJETO • Prestação sob demanda de serviços de comunicação de dados por meio de links dedicados, garantindo conectividade contínua entre todas as unidades da Defensoria Pública da União, bem como acesso seguro à internet e a sistemas externos. Inclui instalação, ativação, manutenção, suporte técnico e toda a gestão necessária para o pleno funcionamento da rede, além de proteção contra ataques DDoS no link da sede, controle seguro e dinâmico do tráfego, gerência completa da rede IP e gestão de níveis de serviço para assegurar qualidade e disponibilidade.. • IDP: 2024-1310-02 | Valor Total: R$ 3.529.153,00 | Mensal: R$ 58.819,00 • GCC: Bruno | GP: Munique | Assinatura: 17/10/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Aquisição Equipamentos PJE • Rollout em andamento
+📊 PLACAR • Produzidos: 72 | Backlog: 4 | Internalizados/Cadastrados: 76
+
+🏛️ 1203/26 - ESP - C O N A B - CONAB SDWAN - VES-1
+📘 RESUMO DO PROJETO • contratação de solução de comunicação de dados SD-WAN (Software-defined Networking in a Wide Area Network) capaz de prover a interconexão das unidades da Companhia Nacional de Abastecimento – CONAB em âmbito nacional, incluindo a Matriz, as superintendências regionais, as unidades armazenadoras e o centro de desenvolvimento de recursos humanos – CDRH, e, também, prover a conexão da rede da CONAB com a rede mundial de computadores – Internet. • IDP: 2024-0692-02 | Valor Total: R$ 7.483.604,00 | Mensal: R$ 124.727,00 • GCC: Bruno | GP: Robinson | Assinatura: 01/02/2026
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Aquisição Equipamentos PJE • Rollout não iniciado
+📊 PLACAR • Produzidos: 0 | Backlog: 86 | Internalizados/Cadastrados: 86
+
+🏛️ 1078/25 - ESP - MULTA - SEFA PARA - SEFA-PA - SDWAN - VES-9
+📘 RESUMO DO PROJETO • Trata se de Rede SD-WAN com 81 pontos sendo dois  concentradores (Acesso Especial) com BLD de 1G + AntiDDoS Portfólio+Aplicação (AED 8100).
+79 Pontos remotos: 1x Banda KA, 2x Banda KU,  9x BLC, 9x Sem conectividade Claro, 54x 4G (4x Cancelado/Pendente Cliente).. • IDP: 2023-623-02 | Valor Total: R$ 8.826.489,00 | Mensal: R$ 147.108,00 • GCC: Rodrigo | GP: Robinson | Assinatura: 30/04/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Em implantação • Rollout em andamento
+📊 PLACAR • Produzidos: 25 | Backlog: 53 | Internalizados/Cadastrados: 78
+
+🏛️ 845/24 - PRO - MULTA - PMSP/SMG/PROD - PRODAM SP - VES-9
+📘 RESUMO DO PROJETO • Trata-se de rede com concentração em BLD e 1639 circuitos BL remotos. Cadastro realizado parcialmente. Inicialmente,o cliente solicitou 841, porém suspendeu/cancelou 319 circuitos. Projeto em rollout.. • IDP: 2022-051-03 | Valor Total: R$ 32.967.741,00 | Mensal: R$ 915.771,00 • GCC: Rodrigo | GP: Renata | Assinatura: 31/10/2024
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Assinatura contrato • Rollout em andamento
+📊 PLACAR • Produzidos: 546 | Backlog: 83 | Internalizados/Cadastrados: 629
+
+🏛️ 1175/25 - ESP - T.S.E. - TSE BLD + SDWAN - VES-1
+📘 RESUMO DO PROJETO • Solução de SD-WAN - fornecimento de 1 acesso para cada ponto com 2 equipamentos SDWAN para HA. sede TSE e 26 regionais TREs
+Banda : 100 Mbps  até 2000 Mbps para o TSE. Link 02 Fornecedor VIVO.
+
+serviço de comunicação de dados para a interligação do Tribunal Superior Eleitoral (TSE) e os Tribunais Regionais Eleitorais (TREs). O serviço engloba instalação, treinamento, gerenciamento proativo contra falhas e configuração de equipamentos e de enlaces de comunicação. • IDP: 2025-0339-01 | Valor Total: R$ 1.490.464,00 | Mensal: R$ 41.402,00 • GCC: Bruno | GP: Munique | Assinatura: 05/11/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Aquisição Equipamentos PJE • Rollout em andamento
+📊 PLACAR • Produzidos: 22 | Backlog: 4 | Internalizados/Cadastrados: 26
+
+🏛️ 1165/25 - ESP - TRE MG - TRE-MG - MPLS 2025 - VES-9
+📘 RESUMO DO PROJETO • Defesa de base com troca de CPE; os 02 concentradores pendente de upgrade e de equipamento. Os remotos tiveram o upgrade realizado com equipamentos antigos. • IDP: 2024-0383-02 | Valor Total: R$ 10.899.677,00 | Mensal: R$ 181.661,00 • GCC: Rodrigo | GP: Adyl | Assinatura: 28/08/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Aquisição Equipamentos PJE • Rollout concluído • Upgrade pendente • Troca de CPE pendente
+📊 PLACAR • Produzidos: 138 | Backlog: 0 | Internalizados/Cadastrados: 138
+
+🏛️ 105/24 - ESP - MULTA - SEPLAD-DF BLD + Anti-DDoS 2024 - VES-1
+📘 RESUMO DO PROJETO • Objeto não informado. • IDP: 2023-061-01 | Valor Total: R$ 3.963.648,00 | Mensal: R$ 82.577,00 • GCC: Bruno | GP: Mônica | Assinatura: 08/02/2024
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Finalizado com Pendência
+📊 PLACAR • Produzidos: 0 | Backlog: 0 | Internalizados/Cadastrados: 0
+
+🏛️ 737/24 - ESP - MULTA - SEDUC MS - REDE WIFI - VES-6
+📘 RESUMO DO PROJETO • Projeto Concluido em 25/03/2026. • IDP: 2024-597-01 | Valor Total: R$ 13.000.032,00 | Mensal: R$ 361.112,00 • GCC: Leila | GP: Munique | Assinatura: 13/09/2024
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Finalizado • Rollout concluído
+📊 PLACAR • Produzidos: 294 | Backlog: 0 | Internalizados/Cadastrados: 294
+
+🏛️ 1094/25 - ESP - MULTA - SEDUC RS - VES-6
+📘 RESUMO DO PROJETO • Cadastro Inicial de 425 sites OK, assim como a PO para a Q13 Piloto executado - 3 sites (1 site aprovado - 2 sites aguardando aprovação do cliente) Sites ativados: 134 Obs.: Equipamentos disponibilizados no RS 229 Kits + 64 em transito Previsão para Janeiro: 140. • IDP: 2025-0598-01 | Valor Total: R$ 31.000.000,00 | Mensal: R$ 861.111,00 • GCC: Leila | GP: Angela | Assinatura: 12/08/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Aquisição Equipamentos PJE • Rollout em andamento
+📊 PLACAR • Produzidos: 391 | Backlog: 140 | Internalizados/Cadastrados: 531
+
+🏛️ 1199/25 - ESP - C AERONAUTICA - CRCEA_SE_REDE TOPNET - VES-6
+📘 RESUMO DO PROJETO • Serviço de canalização de voz e dados com disponibilização de infraestrutura de rede para o aprovisionamento de circuitos ponto a ponto. Rede Determinística da Aeronáutica região CRCEA-SE 57 Sites – Totalizando 392 Circuitos com gerenciamento, exigencia de técnico residente em 2 sites 2 Sites Centrais CRCEA-SE e DTCEA-GL cada um redundante (Anel STM-1) e entrega em estações distintas. Equipamentos entregues parcialmente, aguardando entrega dos demais. Pedido emitido para contratação do Integrador. Pendente cadastro dos cctos. Homologação da GRC previsto para 14/08/25. 01/12 - Ainda pendente de Cadastro das ordens de 16 sites novos. Os demais serão tratados como migração do contrato PJE 08/12 - Permanecemos no aguardo do cadastro dos circuitos, GC informa que até o dia 15/12 teremos a previsão dos cadastros.. • IDP: 2024-971-02 | Valor Total: R$ 0,00 | Mensal: R$ 0,00 • GCC: Leila | GP: Ana Paula | Assinatura: 02/06/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Em implantação • Rollout em andamento
+📊 PLACAR • Produzidos: 4 | Backlog: 9 | Internalizados/Cadastrados: 13
+
+🏛️ 1067/25 - ESP - SEPLAG MG - REDE MPLS SEPLAG-MG - VES-9
+📘 RESUMO DO PROJETO • Rede MPLS. • IDP: 2024-0253-01 | Valor Total: R$ 9.435.631,00 | Mensal: R$ 157.261,00 • GCC: Rodrigo | GP: Munique | Assinatura: 15/05/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Homologação Solução • Rollout não iniciado
+📊 PLACAR • Produzidos: 0 | Backlog: 63 | Internalizados/Cadastrados: 63
+
+🏛️ Cadastrar - VES-6
+📘 RESUMO DO PROJETO • Entrega 20 Gbps (100Gbps) PRODEST - VTA/IP/05734 - cir=1701113 (hoje 7 gbps) Aguardando catalist8500 sendo deslocado do PA para ES, reutilização do COP30 - Previsão de chegada 12/12 - Agendado virada com o cliente 29/12. Entrega concluida em 12/01 CONCLUIDO. • IDP: 2025-0698-01 | Valor Total: R$ 1.500.000,00 | Mensal: R$ 25.000,00 • GCC: Leila | GP: Selecione... | Assinatura: Não informado
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Aprovação CAPEX
+📊 PLACAR • Produzidos: 0 | Backlog: 0 | Internalizados/Cadastrados: 0
+
+🏛️ 1108/25 - ESP - SERPRO - SERPRO MPLS - VES-1
+📘 RESUMO DO PROJETO • novas UFs GO e PR em construção de acesso para realização de piloto. • IDP: 2025-0446-01 | Valor Total: R$ 1.622.400,00 | Mensal: R$ 33.800,00 • GCC: Bruno | GP: Bruno | Assinatura: 29/08/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Em implantação • Rollout concluído
+📊 PLACAR • Produzidos: 249 | Backlog: 0 | Internalizados/Cadastrados: 249
+
+🏛️ Pendente Escopo - VES-1
+📘 RESUMO DO PROJETO • Objeto não informado. • IDP: 2023-549-03 | Valor Total: R$ nan | Mensal: R$ nan • GCC: Rodrigo | GP: Renata | Assinatura: 28/03/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Assinatura contrato
+📊 PLACAR • Produzidos: 0 | Backlog: 0 | Internalizados/Cadastrados: 0
+
+🏛️ 1125/25 - ESP - STJ - SDWAN - MPLS/BLD - VES-1
+📘 RESUMO DO PROJETO • Contratação de serviço contínuo de rede WAN com enlaces redundantes + monitoramento e gerenciamento pró-ativo contra falhas, bem como o monitoramento e gerência da segurança da rede com o objetivo de controle e resposta aos seus incidentes.
+
+1x Concentrador SDWAN (MPLS 500M, BLD 200M)
+34x Sites Remotos SDWAN (MPLS entre 30M - 64M e BLD ENTRE 10M - 32M). • IDP: 2025-0215-02 | Valor Total: R$ 1.370.541,00 | Mensal: R$ 45.685,00 • GCC: Bruno | GP: Angela | Assinatura: 01/10/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Em implantação • Rollout concluído
+📊 PLACAR • Produzidos: 86 | Backlog: 0 | Internalizados/Cadastrados: 86
+
+🏛️ 1066/25 - ESP - 03173154 - TJ/TO - INTERNET SAT - VES-9
+📘 RESUMO DO PROJETO • Pendente entrega de equipamentos. Previsão para recebimento dia 29/08 em Campinas.  Escopo: Fornecimento de internet via satélite. Tipo I: 3 unidades base fixa / Tipo II:  8 unidades base veicular.. • IDP: 2024-998-01 | Valor Total: R$ 179.575,00 | Mensal: R$ 14.965,00 • GCC: Rodrigo | GP: Robinson | Assinatura: 06/05/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Finalizado com Pendência • Rollout concluído
+📊 PLACAR • Produzidos: 11 | Backlog: 0 | Internalizados/Cadastrados: 11
+
+🏛️ Não informado - VES-9
+📘 RESUMO DO PROJETO • Conexão TRE, IP Dedicado Principal com redundância, SD-WAN, SGRS 
++ Links 5G/4G para contingência 
+
+Perfil 1 – 50 Mbps: 210 localidades
+Perfil 2 – 100 Mbps: 110 localidades
+Perfil 3 – 200 Mbps: 10 localidades
+Perfil 4 – 400 Mbps: 7 localidades. • IDP: 2025-0599-01 | Valor Total: R$ 0,00 | Mensal: R$ 0,00 • GCC: Não informado | GP: WILLIAM ALEX FERNANDES | Assinatura: Não informado
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Assinatura contrato
+📊 PLACAR • Produzidos: 0 | Backlog: 0 | Internalizados/Cadastrados: 0
+
+🏛️ Não informado - VES-1
+📘 RESUMO DO PROJETO • REDE MPLS SDWAN 13 SITES + SEDE de 500M - 4G, COM EQUIPAMENTOS EM HA
+AC, AM, AP, BA, GO, MA, MT, PA, PI, RO, RR, TO, DF
+* permitida subcontratação parcial Last-Mile  
+     
+13x links + sede (500M - 4G)
+Cada localidade com 2 equipamentos SDWAN com fonte redundante, totalizando 26 CPEs. • IDP: 2025-1213-01 | Valor Total: R$ 0,00 | Mensal: R$ 0,00 • GCC: FLÁVIO DE SOUZA | GP: TATIANA LOPES FERRAZ | Assinatura: Não informado
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Não informado • Troca de CPE pendente
+📊 PLACAR • Produzidos: 0 | Backlog: 0 | Internalizados/Cadastrados: 0
+
+🏛️ Cadastrar - VES-6
+📘 RESUMO DO PROJETO • Entrega de uma rede MPLS com MULTI-VRF contantrada em 3 redes distintas em um site concentrador em Cutitiba composto de 2 anéis distintos  Entregamos o 1o anel e em 15/04 concluiremos o teste do 1o concentrador. A entrega do 2o anel esta prevista para 30/04 Ainda não tivemos KICK OFF de PJE e estamos entregando em paralelo. O Projeto entrou inicialmente como portfolio entreganto 2 anéis com 3 concentradores.  As ordens chegaram em 18/02 com prazo de entrega em 28/02 e depois disso mudou-se a solução para multi-verf e cadastrou um IDP O projeto contempla 24 entregas de cctos das quais já entregamos 15 em MAIO. Os demais são entregas de acesso de terceiros (JULHO e AGOSTO) - 13/07 - Entregamos mais 3 sites do pacote inicial, restam 12, entretanto a expectativa é que tenhamos mais de 300 unidades em pouco tempo. - Restam 7 cctos a entregar 20/10 - Projeto concluido. Existe uma expectativa de entregarmos até 400 sites remotos, mas ainda sem previsão.. • IDP: 2025-0229-01 | Valor Total: R$ 0,00 | Mensal: R$ 0,00 • GCC: Leila | GP: Mônica | Assinatura: Não informado
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Finalizado
+📊 PLACAR • Produzidos: 0 | Backlog: 0 | Internalizados/Cadastrados: 0
+
+🏛️ 120/24 - ESP - MULTA - PREF RIO ADM DIRETA - VES-6
+📘 RESUMO DO PROJETO • Projeto concluido em 01/03/2026. • IDP: 2023-948-02 | Valor Total: R$ 28.549.380,00 | Mensal: R$ 1.189.558,00 • GCC: Leila | GP: Ana Carolina | Assinatura: 21/08/2024
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Finalizado • Rollout em andamento
+📊 PLACAR • Produzidos: 1797 | Backlog: 9 | Internalizados/Cadastrados: 1806
+
+🏛️ Não informado - VES-9
+📘 RESUMO DO PROJETO • Serviços contínuos de comunicação de dados aos órgãos e entidades do Estado de Minas Gerais, abrangendo até 853 municípios, por meio de uma arquitetura multi‑tecnologia baseada em links IP (fibra óptica, rádio digital e satélite, conforme viabilidade local) e virtualização SD‑WAN. Vigência contratual de até 60 meses. • IDP: 2025-0216-01 | Valor Total: R$ nan | Mensal: R$ nan • GCC: Rodrigo | GP: Não informado | Assinatura: Não informado
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Cadastro
+📊 PLACAR • Produzidos: 0 | Backlog: 0 | Internalizados/Cadastrados: 0
+
+🏛️ 119/24 - ESP - MULTA - PREF RIO ADM INDIRE - VES-6
+📘 RESUMO DO PROJETO • Concluido em 01/03/2026. • IDP: 2023-694-02 | Valor Total: R$ 2.068.570,00 | Mensal: R$ 86.190,00 • GCC: Leila | GP: Ana Carolina | Assinatura: 21/08/2024
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Finalizado • Rollout concluído
+📊 PLACAR • Produzidos: 110 | Backlog: 0 | Internalizados/Cadastrados: 110
+
+🏛️ 018/23-ESP - MULTA - MPF SDWAN/BLD - VES-1
+📘 RESUMO DO PROJETO • Objeto não informado. • IDP: 2022-134-01 | Valor Total: R$ 49.000.000,00 | Mensal: R$ 816.667,00 • GCC: Bruno | GP: Adyl | Assinatura: 24/03/2023
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Homologação Solução
+📊 PLACAR • Produzidos: 0 | Backlog: 0 | Internalizados/Cadastrados: 0
+
+🏛️ 1050/25 - ESP - MS - INFOSUS IV - VES-1
+📘 RESUMO DO PROJETO • Objeto não informado. • IDP: 2015-230-07 | Valor Total: R$ 173.000.000,00 | Mensal: R$ 2.886.046,00 • GCC: Bruno | GP: Rafael | Assinatura: 27/12/2022
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Em implantação • Rollout concluído
+📊 PLACAR • Produzidos: 37 | Backlog: 0 | Internalizados/Cadastrados: 37
+
+🏛️ 118/24 - ESP - MULTA - C MARINHA - SDWAN+MPLS - VES-6
+📘 RESUMO DO PROJETO • Em rollout, falta apenas o site de TRINDADE - ES acesso (VSAT BANDA KA). • IDP: 2023-810-02 | Valor Total: R$ 48.099.492,00 | Mensal: R$ 801.658,00 • GCC: Leila | GP: Ana Carolina | Assinatura: 16/07/2024
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Finalizado • Rollout concluído
+📊 PLACAR • Produzidos: 115 | Backlog: 0 | Internalizados/Cadastrados: 115
+
+🏛️ Aguardando Cadastro - VES-9
+📘 RESUMO DO PROJETO • Contratação de empresa especializada na prestação de Serviços de Telefonia Fixa Comutada (STFC) para atender o público interno e externo do Complexo do Hospital das Clínicas da FMUSP.
+Chamadas Locais Fixo–Fixo e Fixo-Móvel
+Chamadas Nacionais Fixo–Fixo e FIxo-FIxo LDN
+Chamadas Nacionais Móvel–Fixo e Móvel-Móvel
+Chamadas Internacionais (LDI – Origem Fixo)
+Assinatura de Entroncamento Digital E1
+Assinatura de DDR. • IDP: 2026-0010-01 | Valor Total: R$ 1.521.556,00 | Mensal: R$ 25.359,00 • GCC: Rodrigo Borges | GP: Fernanda | Assinatura: Não informado
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Cadastro
+📊 PLACAR • Produzidos: 0 | Backlog: 0 | Internalizados/Cadastrados: 0
+
+🏛️ 1227/25 - ESP - FUND.ABC - FUND-ABC WIFI - VES-9
+📘 RESUMO DO PROJETO • não detalhado. • IDP: 2025-0407-01 | Valor Total: R$ 251.998,00 | Mensal: R$ 21.000,00 • GCC: Rodrigo | GP: Munique | Assinatura: 30/05/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Em implantação • Rollout em andamento
+📊 PLACAR • Produzidos: 7 | Backlog: 6 | Internalizados/Cadastrados: 13
+
+🏛️ Cadastrar - VES-6
+📘 RESUMO DO PROJETO • Objeto não informado. • IDP: 2024-1092-01 | Valor Total: R$ nan | Mensal: R$ nan • GCC: Leila | GP: Angela | Assinatura: 04/08/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Projeto
+📊 PLACAR • Produzidos: 0 | Backlog: 0 | Internalizados/Cadastrados: 0
+
+🏛️ Cadastrar - VES-6
+📘 RESUMO DO PROJETO • Objeto não informado. • IDP: 2024-1253-01 | Valor Total: R$ 11.557.867,00 | Mensal: R$ 192.631,00 • GCC: Leila | GP: Tatiana | Assinatura: Não informado
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Projeto
+📊 PLACAR • Produzidos: 0 | Backlog: 0 | Internalizados/Cadastrados: 0
+
+🏛️ - - VES-6
+📘 RESUMO DO PROJETO • Upgrade de 1 para 2Gbps e alteração da última milha por CAMINHOS DISTINTOS em cada lote Gerência e DNS Failover em nuvem customizado.. • IDP: 2025-0971-01 | Valor Total: R$ 86.624,00 | Mensal: R$ 2.406,00 • GCC: Leila | GP: Fernanda | Assinatura: 21/11/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Finalizado • Upgrade pendente
+📊 PLACAR • Produzidos: 0 | Backlog: 0 | Internalizados/Cadastrados: 0
+
+🏛️ 875/25 - ESP - CEF - INTEGRADOR DE REDES - VES-4
+📘 RESUMO DO PROJETO • Objeto não informado. • IDP: 2023-934-01 | Valor Total: R$ 35.350.022,00 | Mensal: R$ 1.472.918,00 • GCC: Rodrigo | GP: Renata | Assinatura: 29/01/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Em implantação • Rollout em andamento
+📊 PLACAR • Produzidos: 4545 | Backlog: 485 | Internalizados/Cadastrados: 5030
+
+🏛️ Cadastrar - VES-1
+📘 RESUMO DO PROJETO • Objeto não informado. • IDP: 2025-0588-01 | Valor Total: R$ 218.160,00 | Mensal: R$ 18.180,00 • GCC: Bruno | GP: Selecione... | Assinatura: Não informado
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Cadastro
+📊 PLACAR • Produzidos: 0 | Backlog: 0 | Internalizados/Cadastrados: 0
+
+🏛️ 113/24 - ESP - BCO BRASIL - SDWAN - VES-4
+📘 RESUMO DO PROJETO • testes de limpeza. • IDP: 2023-303-01 | Valor Total: R$ 295.000.000,00 | Mensal: R$ 4.916.620,00 • GCC: Bruno | GP: Adyl | Assinatura: 11/12/2024
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Em implantação • Rollout em andamento
+📊 PLACAR • Produzidos: 8854 | Backlog: 581 | Internalizados/Cadastrados: 9435
+
+🏛️ Aguardando Cadastro - VES-9
+📘 RESUMO DO PROJETO • MPLS com enlaces de transmissão, hardware, software para a interligação corporativa das redes LAN e MAN, abrangendo a Direção Geral, Superintendências, Agências, Postos Bancários e rede parceiros, com Balanceamento Seguro de circuitos e WIFI, incluindo Gerenciamento e Monitoração WAN e fornecimento de Acessos Internet com Anti-DDoS Volumétrico, Anti-DDoS Camada de Aplicação, NGFW e Rede Dedicada de Alta Velocidade. • IDP: 2026-0025-01 | Valor Total: R$ 69.997.998,00 | Mensal: R$ 1.166.633,00 • GCC: RODRIGO BORGES | GP: EIMART DE CASTRO ALVES | Assinatura: Não informado
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Assinatura contrato
+📊 PLACAR • Produzidos: 0 | Backlog: 0 | Internalizados/Cadastrados: 0
+
+🏛️ 1049/25 - ESP - MULTA - BCO BRASIL - REPAR - VES-4
+📘 RESUMO DO PROJETO • Objeto não informado. • IDP: 2025-0365-01 | Valor Total: R$ 196.666,00 | Mensal: R$ 5.463,00 • GCC: Bruno | GP: Rafael | Assinatura: 02/07/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Em implantação • Rollout não iniciado
+📊 PLACAR • Produzidos: 0 | Backlog: 15 | Internalizados/Cadastrados: 15
+
+🏛️ Não informado - VES-6
+📘 RESUMO DO PROJETO • Adição de  novos sites e de segurança a rede SDWAN existente
+
+* 185x FortiGate-40F com licença UTP
+* 165x Licenciamento UTP  para os 40F já existentes no contrato
+* Expansão do FortiManager
+* Instalação
+* Operação do SOC
+* 60 Internet Banda Larga Terceiro (Freeway). • IDP: 2024-597-02 | Valor Total: R$ 5.000,00 | Mensal: R$ 14.100,00 • GCC: LEILA FERREIRA | GP: MUNIQUE GRASIELL BARBOSA VASCONCELOS | Assinatura: 11/11/2025
+⚠️ PRINCIPAIS PENDÊNCIAS • Status: Não informado
+📊 PLACAR • Produzidos: 0 | Backlog: 0 | Internalizados/Cadastrados: 0

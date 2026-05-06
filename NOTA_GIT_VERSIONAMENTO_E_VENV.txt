@@ -1,0 +1,88 @@
+Nota GitHub / Versionamento / Ambiente Virtual
+
+1) Por que usar GitHub
+- GitHub mantém o histórico de alterações.
+- Permite trabalhar em branches separados.
+- Facilita colaboração e recuperação de versões.
+
+2) Passo a passo básico do versionamento
+A) Inicializar o repositório local (apenas uma vez):
+```powershell
+cd "C:\Users\Z181040\OneDrive - Claro SA\BASES\Projetos_GOV\app_gcc_gov_v3"
+git init
+```
+
+B) Verificar status:
+```powershell
+git status
+```
+
+C) Adicionar arquivos:
+```powershell
+git add .
+```
+
+D) Criar commit:
+```powershell
+git commit -m "Mensagem do que foi feito"
+```
+
+E) Criar branch de trabalho (recomendado):
+```powershell
+git checkout -b v3-entrada-saida
+```
+
+F) Enviar para o GitHub (após criar o repositório remoto):
+```powershell
+git remote add origin https://github.com/<seu-usuario>/<nome-do-repo>.git
+git push -u origin main
+```
+
+3) Como fazer atualizações
+- Faça alterações no código.
+- Teste localmente.
+- Use `git add` e `git commit`.
+- Empurre para o GitHub com `git push`.
+- Se estiver trabalhando em funcionalidades separadas, use branches diferentes.
+
+4) Exemplo de mensagens de commit
+- "Remove páginas cadastro_projeto e atualizar_diario do app.py"
+- "Adiciona versão 3 do projeto em OneDrive"
+- "Ajusta importações e validação de caminhos"
+
+5) Ambiente virtual separado
+- Sim: crie um venv próprio para este projeto.
+- Isso evita misturar dependências com outros projetos.
+
+6) Como criar o ambiente virtual
+```powershell
+cd "C:\Users\Z181040\OneDrive - Claro SA\BASES\Projetos_GOV\app_gcc_gov_v3"
+python -m venv .venv
+```
+
+7) Como ativar
+- PowerShell:
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+- CMD:
+```cmd
+.\.venv\Scripts\activate.bat
+```
+
+8) Como instalar dependências
+```powershell
+pip install -r requirements.txt
+```
+
+9) Como ignorar o ambiente virtual no Git
+- Se você criar o `.venv`, adicione ao `.gitignore`:
+```
+.venv/
+```
+- Já deve ficar ignorado se você usar o mesmo padrão que no projeto de entrada.
+
+10) Recomendação final
+- Crie o repositório remoto no GitHub.
+- Empurre a versão 3 como `main` ou `v3`.
+- Mantenha `app_gcc_gov_v2` intacto para referência.
