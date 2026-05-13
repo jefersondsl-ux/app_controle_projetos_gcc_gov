@@ -12,7 +12,7 @@ PATH_APONT = r"C:\Users\z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Diario_Bo
 PATH_CONTROLE = r"C:\Users\z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Diario_Bordo\BD_DIM\d_Controle_Projetos.xlsx"
 PATH_BACKLOG = r"C:\Users\z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Base_Dados_SGP\Bases_Processadas_Python\BD_Backlog_SGP.xlsx"
 PATH_PRODUCAO_ANALITICO = r"C:\Users\z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Base_Dados_SGP\Bases_Processadas_Python\BD_Produção_Analitica.xlsx"
-PATH_PROJETOS = r"C:\Users\z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Diario_Bordo\BD_DIM\d_Projetos.xlsx"
+PATH_PROJETOS = r"C:\Users\z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Base_Dados_SGP\Bases_Processadas_Python\BASE_PROJETOS\d_Projetos.xlsx"
 PATH_TECNOLOGIA = r"C:\Users\z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Diario_Bordo\BD_DIM\d_tecnologia.xlsx"
 PATH_RESPONSAVEIS = r"C:\Users\z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Diario_Bordo\BD_DIM\d_responsaveis.xlsx"
 
@@ -161,6 +161,20 @@ def carregar_producao(ttl=30):
         if faltantes:
             st.error(f"Base analítica inválida. Colunas faltantes: {faltantes}")
             return pd.DataFrame()
+
+        if "QTD_ESTRATEGIA_SIM" not in df.columns:
+            st.warning(
+                "A base analítica não contém QTD_ESTRATEGIA_SIM. "
+                "Será usado QTD_CIRCUITOS como fallback para a produção."
+            )
+        else:
+            df["QTD_ESTRATEGIA_SIM"] = pd.to_numeric(
+                df["QTD_ESTRATEGIA_SIM"], errors="coerce"
+            ).fillna(0).astype(int)
+
+        df["QTD_CIRCUITOS"] = pd.to_numeric(
+            df["QTD_CIRCUITOS"], errors="coerce"
+        ).fillna(0).astype(int)
 
         return df
 

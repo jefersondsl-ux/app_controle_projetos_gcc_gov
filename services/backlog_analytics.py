@@ -1,4 +1,6 @@
+import os
 import re
+import unicodedata
 import numpy as np
 import pandas as pd
 from .carregar_bases import carregar_meta_mensal
@@ -43,6 +45,20 @@ def categorizar_produto(valor):
     return "OUTROS"
 
 
+def normalizar_cliente(valor):
+    if valor is None or pd.isna(valor):
+        return ""
+
+    texto = str(valor).strip()
+    texto = unicodedata.normalize("NFKD", texto)
+    texto = "".join(ch for ch in texto if not unicodedata.combining(ch))
+    texto = texto.replace("\xa0", " ")
+    texto = re.sub(r"[^\w\s]", " ", texto)
+    texto = re.sub(r"\s+", " ", texto).strip().upper()
+
+    return texto
+
+
 def extrair_prefixo_carimbo(texto):
     if pd.isna(texto):
         return ""
@@ -67,7 +83,7 @@ def calcular_forecast_inicio_mes(df_meta):
     if "PRODUTO_AJUSTADO" in df.columns:
         df["PRODUTO_AJUSTADO"] = df["PRODUTO_AJUSTADO"].astype(str).str.upper().str.strip()
     if "CLIENTE" in df.columns:
-        df["CLIENTE"] = df["CLIENTE"].astype(str).str.strip()
+        df["CLIENTE"] = df["CLIENTE"].apply(normalizar_cliente)
 
     def _parse_num(valor):
         if pd.isna(valor):
@@ -136,6 +152,9 @@ def preparar_base_backlog(df_backlog):
             .apply(normalizar_produto_ajustado)
         )
         df["PRODUTO_CATEGORIA"] = df["PRODUTO_AJUSTADO"].apply(categorizar_produto)
+
+    if "CLIENTE" in df.columns:
+        df["CLIENTE"] = df["CLIENTE"].apply(normalizar_cliente)
 
     return df
 
@@ -256,12 +275,25 @@ def resumo_estrategia(df):
 # AGGRID - MATRIZ BACKLOG
 # ==============================
 
-def matriz_backlog_por_projeto(df_backlog, df_controle):
+def matriz_backlog_por_projeto(df_backlog, df_controle, df_d_projetos=None):
     """
     Matriz backlog com nome do projeto (fallback para carimbo)
     """
 
     df = preparar_base_backlog(df_backlog)
+
+    # =========================
+    # USAR CLIENTE DE d_Projetos QUANDO DISPONÍVEL
+    # =========================
+
+    if df_d_projetos is not None and "CARIMBO_PREFIXO" in df.columns and "CARIMBO_PREFIXO" in df_d_projetos.columns and "CLIENTE" in df_d_projetos.columns:
+        df_dim = df_d_projetos[["CARIMBO_PREFIXO", "CLIENTE"]].copy()
+        df_dim["CARIMBO_PREFIXO"] = df_dim["CARIMBO_PREFIXO"].astype(str).str.strip()
+        df_dim["CLIENTE_DIM"] = df_dim["CLIENTE"].apply(normalizar_cliente)
+        df_dim = df_dim.dropna(subset=["CARIMBO_PREFIXO", "CLIENTE_DIM"]).drop_duplicates("CARIMBO_PREFIXO")
+        df = df.merge(df_dim[["CARIMBO_PREFIXO", "CLIENTE_DIM"]], on="CARIMBO_PREFIXO", how="left")
+        df["CLIENTE"] = df["CLIENTE_DIM"].fillna(df["CLIENTE"])
+        df = df.drop(columns=["CLIENTE_DIM"])
 
     # =========================
     # VALIDAÇÃO
@@ -303,11 +335,57 @@ def matriz_backlog_por_projeto(df_backlog, df_controle):
 
     # =========================
     # FLAGS DE TEMPO
+
+    hoje = pd.Timestamp.today().normalize()
+    inicio_mes_atual = hoje.replace(day=1)
+    next1 = inicio_mes_atual + pd.DateOffset(months=1)
+    next2 = inicio_mes_atual + pd.DateOffset(months=2)
+
+    meses_abrev = {
+        1: "JAN",
+        2: "FEV",
+        3: "MAR",
+        4: "ABR",
+        5: "MAI",
+        6: "JUN",
+        7: "JUL",
+        8: "AGO",
+        9: "SET",
+        10: "OUT",
+        11: "NOV",
+        12: "DEZ",
+    }
+    next1_label = f"FORECAST_{meses_abrev[next1.month]}_{next1.year}"
+    next2_label = f"FORECAST_{meses_abrev[next2.month]}_{next2.year}"
+
+    if "DATA_PREVISAO_ATIVACAO_CLIENTE" in df.columns:
+        df["DATA_PREVISAO_ATIVACAO_CLIENTE"] = pd.to_datetime(
+            df["DATA_PREVISAO_ATIVACAO_CLIENTE"],
+            errors="coerce"
+        )
+
+        def classificar_faixa_backlog(data):
+            if pd.isna(data):
+                return "FORECAST_A_DEFINIR"
+            if data < inicio_mes_atual:
+                return "FORECAST_AJUSTAR"
+            if data.year == hoje.year and data.month == hoje.month:
+                return "BACKLOG_ATUAL"
+            if data.year == next1.year and data.month == next1.month:
+                return f"FORECAST_{meses_abrev[next1.month]}_{next1.year}"
+            if data.year == next2.year and data.month == next2.month:
+                return f"FORECAST_{meses_abrev[next2.month]}_{next2.year}"
+            if data > next2 + pd.offsets.MonthEnd(0):
+                return "MESES_RESTANTES"
+            return "OUTROS_FORECAST"
+
+        df["FAIXA_BACKLOG"] = df["DATA_PREVISAO_ATIVACAO_CLIENTE"].apply(classificar_faixa_backlog)
+
     # =========================
 
     df["FLAG_BACKLOG_ATUAL"] = df["FAIXA_BACKLOG"] == "BACKLOG_ATUAL"
-    df["FLAG_MAI"] = df["FAIXA_BACKLOG"] == "FORECAST_MAI_2026"
-    df["FLAG_JUN"] = df["FAIXA_BACKLOG"] == "FORECAST_JUN_2026"
+    df["FLAG_NEXT1"] = df["FAIXA_BACKLOG"] == next1_label
+    df["FLAG_NEXT2"] = df["FAIXA_BACKLOG"] == next2_label
     df["FLAG_RESTANTE"] = df["FAIXA_BACKLOG"] == "MESES_RESTANTES"
     df["FLAG_AJUSTAR"] = df["FAIXA_BACKLOG"] == "FORECAST_AJUSTAR"
     df["FLAG_DEFINIR"] = df["FAIXA_BACKLOG"] == "FORECAST_A_DEFINIR"
@@ -352,8 +430,8 @@ def matriz_backlog_por_projeto(df_backlog, df_controle):
     # =========================
 
     df["FLAG_BACKLOG_ATUAL_EST"] = df["FLAG_BACKLOG_ATUAL"] & df["FLAG_ESTRATEGIA"]
-    df["FLAG_MAI_EST"] = df["FLAG_MAI"] & df["FLAG_ESTRATEGIA"]
-    df["FLAG_JUN_EST"] = df["FLAG_JUN"] & df["FLAG_ESTRATEGIA"]
+    df["FLAG_NEXT1_EST"] = df["FLAG_NEXT1"] & df["FLAG_ESTRATEGIA"]
+    df["FLAG_NEXT2_EST"] = df["FLAG_NEXT2"] & df["FLAG_ESTRATEGIA"]
     df["FLAG_RESTANTE_EST"] = df["FLAG_RESTANTE"] & df["FLAG_ESTRATEGIA"]
     df["FLAG_AJUSTAR_EST"] = df["FLAG_AJUSTAR"] & df["FLAG_ESTRATEGIA"]
     df["FLAG_DEFINIR_EST"] = df["FLAG_DEFINIR"] & df["FLAG_ESTRATEGIA"]
@@ -367,11 +445,12 @@ def matriz_backlog_por_projeto(df_backlog, df_controle):
     
     # =========================
     # FLAGS DE FORECAST
+    # Já definidos acima com labels dinâmicos para os próximos meses.
     # =========================
 
     df["FLAG_BACKLOG_ATUAL"] = df["FAIXA_BACKLOG"] == "BACKLOG_ATUAL"
-    df["FLAG_MAI"] = df["FAIXA_BACKLOG"] == "FORECAST_MAI_2026"
-    df["FLAG_JUN"] = df["FAIXA_BACKLOG"] == "FORECAST_JUN_2026"
+    df["FLAG_NEXT1"] = df["FAIXA_BACKLOG"] == next1_label
+    df["FLAG_NEXT2"] = df["FAIXA_BACKLOG"] == next2_label
     df["FLAG_RESTANTE"] = df["FAIXA_BACKLOG"] == "MESES_RESTANTES"
     df["FLAG_AJUSTAR"] = df["FAIXA_BACKLOG"] == "FORECAST_AJUSTAR"
     df["FLAG_DEFINIR"] = df["FAIXA_BACKLOG"] == "FORECAST_A_DEFINIR"
@@ -426,11 +505,13 @@ def matriz_backlog_por_projeto(df_backlog, df_controle):
             PEND_PJE=("FLAG_PEND_PJE_EST", "sum"),
             SEM_CARIMBO=("FLAG_SEM_CARIMBO_EST", "sum"),
             SEM_CARIMBO_AGING=("SEM_CARIMBO_MAX_AGING", "max"),
-            FORECAST_MAI_2026=("FLAG_MAI_EST", "sum"),
-            FORECAST_JUN_2026=("FLAG_JUN_EST", "sum"),
             MESES_RESTANTES=("FLAG_RESTANTE_EST", "sum"),
             FORECAST_AJUSTAR=("FLAG_AJUSTAR_EST", "sum"),
-            FORECAST_A_DEFINIR=("FLAG_DEFINIR_EST", "sum")
+            FORECAST_A_DEFINIR=("FLAG_DEFINIR_EST", "sum"),
+            **{
+                next1_label: ("FLAG_NEXT1_EST", "sum"),
+                next2_label: ("FLAG_NEXT2_EST", "sum"),
+            }
         )
     )
 
@@ -442,6 +523,12 @@ def matriz_backlog_por_projeto(df_backlog, df_controle):
     df_forecast_mes = calcular_forecast_inicio_mes(df_meta)
     
     if not df_forecast_mes.empty:
+        unmatched_clients = df_forecast_mes[~df_forecast_mes["CLIENTE"].isin(df_group["CLIENTE"])]
+        if not unmatched_clients.empty:
+            report_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'clientes_meta_sem_correspondencia.csv'))
+            unmatched_clients.to_csv(report_path, index=False)
+            print(f"WARNING: {len(unmatched_clients)} cliente(s) meta sem correspondência gravados em {report_path}")
+
         df_group = df_group.merge(df_forecast_mes, on="CLIENTE", how="left")
         df_group["FORECAST_INICIO_MES"] = df_group["FORECAST_INICIO_MES"].fillna(0).astype(int)
         df_group["FORECAST_REGRA_COMERCIAL"] = df_group["FORECAST_REGRA_COMERCIAL"].fillna(0)

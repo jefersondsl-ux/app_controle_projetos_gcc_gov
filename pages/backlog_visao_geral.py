@@ -5,12 +5,10 @@ import io
 from st_aggrid import JsCode
 import streamlit.components.v1 as components
 
-from services.carregar_bases import carregar_backlog
-from services.backlog_analytics import resumo_backlog, resumo_estrategia, matriz_backlog_por_projeto
+from services.carregar_bases import carregar_backlog, carregar_projetos, carregar_controle, carregar_producao
+from services.backlog_analytics import resumo_backlog, resumo_estrategia, matriz_backlog_por_projeto, normalizar_cliente
 from components.cards import render_card
-from services.carregar_bases import carregar_projetos
 from st_aggrid import AgGrid, GridOptionsBuilder
-from services.carregar_bases import carregar_controle
 
 # ==============================
 # FORMATAÇÃO MOEDA
@@ -49,7 +47,134 @@ def page_backlog_visao_geral():
 
     df_controle = carregar_controle()
 
-    df_matriz = matriz_backlog_por_projeto(df_backlog, df_controle)
+    df_producao = carregar_producao()
+
+    df_matriz = matriz_backlog_por_projeto(df_backlog, df_controle, df_projetos)
+
+    # ==============================
+    # PRODUÇÃO POR CLIENTE (d_Projetos)
+    # ==============================
+
+    def agregar_producao_por_cliente(df_producao, df_projetos):
+        if df_producao.empty or df_projetos is None:
+            print("⚠️ DEBUG: Produção vazia ou d_Projetos None")
+            return pd.DataFrame(columns=["CLIENTE", "PRODUCAO_CIRCUITOS"])
+
+        df_prod = df_producao.copy()
+        df_prod["CARIMBO_PREFIXO"] = df_prod["CARIMBO_PREFIXO"].astype(str).str.strip()
+
+        quantidade_col = (
+            "QTD_ESTRATEGIA_SIM"
+            if "QTD_ESTRATEGIA_SIM" in df_prod.columns
+            else "QTD_CIRCUITOS"
+        )
+        df_prod["QTD_ESTRATEGIA_SIM"] = pd.to_numeric(
+            df_prod[quantidade_col], errors="coerce"
+        ).fillna(0).astype(int)
+
+        receita_col = next(
+            (c for c in ["RECEITA_TOTAL", "RECEITA", "RECEITA_LIQUIDA", "RECEITA_BRUTA"] if c in df_prod.columns),
+            None
+        )
+        if receita_col is None:
+            print("⚠️ DEBUG: Coluna de receita não encontrada em produção. Usando 0.")
+            df_prod["RECEITA"] = 0.0
+        else:
+            df_prod["RECEITA"] = pd.to_numeric(
+                df_prod[receita_col]
+                    .astype(str)
+                    .str.replace(r"[^0-9,.-]", "", regex=True)
+                    .str.replace(",", ".", regex=False),
+                errors="coerce"
+            ).fillna(0.0)
+            print(f"✓ DEBUG: Receita agregada a partir da coluna {receita_col}")
+
+        df_prod = df_prod[df_prod["QTD_ESTRATEGIA_SIM"] > 0].copy()
+
+        df_prod = df_prod.groupby("CARIMBO_PREFIXO", as_index=False).agg(
+            QTD_ESTRATEGIA_SIM=("QTD_ESTRATEGIA_SIM", "sum"),
+            QTD_CIRCUITOS=("QTD_CIRCUITOS", "sum"),
+            RECEITA=("RECEITA", "sum")
+        )
+        print(
+            f"✓ DEBUG: {len(df_prod)} prefixos únicos em produção, "
+            f"total estratégia {df_prod['QTD_ESTRATEGIA_SIM'].sum()} circuitos"
+        )
+
+        if "CARIMBO_PREFIXO" not in df_projetos.columns or "CLIENTE" not in df_projetos.columns:
+            print("⚠️ DEBUG: Colunas faltantes em d_Projetos")
+            return pd.DataFrame(columns=["CLIENTE", "PRODUCAO_CIRCUITOS"])
+
+        df_dim = df_projetos[["CARIMBO_PREFIXO", "CLIENTE"]].copy()
+        df_dim["CARIMBO_PREFIXO"] = df_dim["CARIMBO_PREFIXO"].astype(str).str.strip()
+        df_dim["CLIENTE"] = df_dim["CLIENTE"].fillna("").astype(str).apply(normalizar_cliente)
+        df_dim = df_dim[df_dim["CLIENTE"].astype(str).str.strip() != ""].drop_duplicates("CARIMBO_PREFIXO")
+        print(f"✓ DEBUG: {len(df_dim)} prefixos com cliente válido em d_Projetos")
+
+        if df_dim.empty:
+            print("⚠️ DEBUG: Nenhum cliente válido em d_Projetos após filtro")
+            return pd.DataFrame(columns=["CLIENTE", "PRODUCAO_CIRCUITOS"])
+
+        df_prod = df_prod.merge(df_dim, on="CARIMBO_PREFIXO", how="left")
+        matches = df_prod['CLIENTE'].notna().sum()
+        print(f"✓ DEBUG: Merge produziu {matches} matches de {len(df_prod)} linhas")
+        
+        # SIMPLIFICAÇÃO: Mostrar prefixos sem mapeamento como categoria especial
+        sem_cliente = df_prod[df_prod['CLIENTE'].isna() | (df_prod['CLIENTE'] == '')]
+        if not sem_cliente.empty:
+            print(f"⚠️ DEBUG: {len(sem_cliente)} prefixos SEM cliente - serão agrupados como 'PREFIXOS SEM MAPEAMENTO'")
+            total_sem_map = sem_cliente['QTD_CIRCUITOS'].sum()
+            print(f"   Total de circuitos sem mapeamento: {total_sem_map}")
+        
+        # Preencher clientes vazios com categoria especial
+        df_prod["CLIENTE"] = df_prod["CLIENTE"].fillna("⚠️ PREFIXOS SEM MAPEAMENTO")
+        df_prod["CLIENTE"] = df_prod["CLIENTE"].apply(lambda x: "⚠️ PREFIXOS SEM MAPEAMENTO" if str(x).strip() == "" else normalizar_cliente(x))
+        
+        # Converter colunas de quantidade para numérico
+        df_prod["QTD_CIRCUITOS"] = pd.to_numeric(df_prod["QTD_CIRCUITOS"], errors="coerce").fillna(0)
+        df_prod["QTD_ESTRATEGIA_SIM"] = pd.to_numeric(df_prod["QTD_ESTRATEGIA_SIM"], errors="coerce").fillna(0).astype(int)
+
+        result = (
+            df_prod
+            .groupby("CLIENTE", as_index=False)
+            .agg(
+                PRODUCAO_CIRCUITOS=("QTD_ESTRATEGIA_SIM", "sum"),
+                RECEITA=("RECEITA", "sum")
+            )
+        )
+        print(f"✓ DEBUG: {len(result)} clientes com produção de estratégia, total {result['PRODUCAO_CIRCUITOS'].sum()} circuitos")
+        
+        # Mostrar top 5 clientes
+        if len(result) > 0:
+            print(f"   Top 5 clientes:")
+            for _, row in result.nlargest(5, 'PRODUCAO_CIRCUITOS').iterrows():
+                print(f"   • {row['CLIENTE']}: {int(row['PRODUCAO_CIRCUITOS'])} circuitos")
+        
+        return result
+
+    df_prod_cliente = agregar_producao_por_cliente(df_producao, df_projetos)
+    df_matriz["CLIENTE"] = df_matriz["CLIENTE"].fillna("").astype(str).apply(normalizar_cliente)
+
+    if not df_prod_cliente.empty:
+        print(f"✓ DEBUG: Fazendo merge outer com {len(df_matriz)} linhas matriz e {len(df_prod_cliente)} linhas produção")
+        df_prod_cliente["CLIENTE"] = df_prod_cliente["CLIENTE"].fillna("").astype(str).apply(normalizar_cliente)
+
+        estrategia_clients = set(df_matriz.loc[df_matriz.get("ESTRATEGIA", 0) > 0, "CLIENTE"].unique())
+        if estrategia_clients:
+            df_prod_cliente = df_prod_cliente[df_prod_cliente["CLIENTE"].isin(estrategia_clients)].copy()
+            print(f"✓ DEBUG: Produção filtrada para clientes de estratégia: {len(df_prod_cliente)} linhas")
+        else:
+            print("⚠️ DEBUG: Nenhum cliente de estratégia encontrado. Produção não será filtrada.")
+
+        df_matriz = df_matriz.merge(df_prod_cliente, on="CLIENTE", how="outer")
+        print(f"✓ DEBUG: Matriz após merge: {len(df_matriz)} linhas, {(df_matriz['PRODUCAO_CIRCUITOS'] > 0).sum()} com produção > 0")
+        df_matriz["PRODUCAO_CIRCUITOS"] = df_matriz["PRODUCAO_CIRCUITOS"].fillna(0).astype(int)
+        for col in df_matriz.columns:
+            if col != "CLIENTE":
+                df_matriz[col] = df_matriz[col].fillna(0)
+    else:
+        print("⚠️ DEBUG: df_prod_cliente vazio, definindo PRODUCAO_CIRCUITOS = 0")
+        df_matriz["PRODUCAO_CIRCUITOS"] = 0
 
     # ==============================
     # RESUMOS
@@ -91,6 +216,13 @@ def page_backlog_visao_geral():
         st.markdown("**Última Entrada**")
         st.markdown(f"<span style='font-size:18px'>{_format_date(ultima_data_backlog)}</span>", unsafe_allow_html=True)
         #st.markdown("<span style='color:#94A3B8; font-size:12px'>Última DATA_ENTRADA_BACKLOG</span>", unsafe_allow_html=True)
+
+    # Alerta de produção
+    if "PRODUCAO_CIRCUITOS" in df_matriz.columns:
+        clientes_com_producao = (df_matriz["PRODUCAO_CIRCUITOS"] > 0).sum()
+        total_producao = df_matriz["PRODUCAO_CIRCUITOS"].sum()
+        if clientes_com_producao > 0:
+            st.info(f"📊 **Produção integrada:** {clientes_com_producao} cliente(s) com {int(total_producao)} circuitos produzidos")
 
     st.divider()
 
@@ -141,9 +273,27 @@ def page_backlog_visao_geral():
         df_grid = df_matriz.sort_values("TOTAL", ascending=False)
 
         # ordem estratégica das colunas
+        forecast_months = [
+            c for c in df_grid.columns
+            if re.match(r"^FORECAST_[A-Z]{3}_\d{4}$", c)
+        ]
+
+        def _forecast_key(col):
+            m, y = re.match(r"^FORECAST_([A-Z]{3})_(\d{4})$", col).groups()
+            ord_meses = {
+                "JAN": 1, "FEV": 2, "MAR": 3, "ABR": 4,
+                "MAI": 5, "JUN": 6, "JUL": 7, "AGO": 8,
+                "SET": 9, "OUT": 10, "NOV": 11, "DEZ": 12,
+            }
+            return (int(y), ord_meses.get(m, 0))
+
+        forecast_months = sorted(forecast_months, key=_forecast_key)
+
         colunas_ordem = [
             "CLIENTE",
             "TOTAL",
+            "PRODUCAO_CIRCUITOS",
+            "RECEITA",
 
             "GROSS",
             "SERVICO",
@@ -168,8 +318,7 @@ def page_backlog_visao_geral():
             "SEM_CARIMBO_AGING",
             "DELTA_RECEITA_ESTRATEGIA",
             "REGRA_COMERCIAL_ESTRATEGIA",
-            "FORECAST_MAI_2026",
-            "FORECAST_JUN_2026",
+        ] + forecast_months + [
             "MESES_RESTANTES",
             "FORECAST_AJUSTAR",
             "FORECAST_A_DEFINIR",
@@ -212,6 +361,7 @@ def page_backlog_visao_geral():
             "TOTAL": "TOTAL",
             "GROSS": "GROSS",
             "SERVICO": "SERVIÇO",
+            "RECEITA": "Receita",
             "OUTROS": "OUTROS",
             "INTERNET": "INTERNET",
             "DADOS": "DADOS",
@@ -221,6 +371,7 @@ def page_backlog_visao_geral():
             "ESTRATEGIA": "Estratégia\nde Redes",
             "DELTA_RECEITA_ESTRATEGIA": "Receita\nEstratégia",
             "REGRA_COMERCIAL_ESTRATEGIA": "Regra\nComercial\nEstratégia",
+            "PRODUCAO_CIRCUITOS": "Produção\nQtd",
             "FORECAST_INICIO_MES": "Forecast\nInício Mês\n(Qtd)",
             "FORECAST_REGRA_COMERCIAL": "Regra\nComercial",
             "FORECAST_DELTA_RECEITA": "Receita\nForecast",
@@ -273,6 +424,8 @@ def page_backlog_visao_geral():
             "Receita\nEstratégia",
             "Regra\nComercial\nEstratégia",
             "Forecast\nInício Mês\n(Qtd)",
+            "Produção\nQtd",
+            "Receita",
             "Regra\nComercial",
             "Receita\nForecast",
             "Backlog\nAtual\n(Qtd)",
@@ -340,13 +493,16 @@ def page_backlog_visao_geral():
             df_grid["Regra\nComercial\nEstratégia"] = df_grid["Regra\nComercial\nEstratégia"].fillna(0)
         if "Receita\nForecast" in df_grid.columns:
             df_grid["Receita\nForecast"] = df_grid["Receita\nForecast"].fillna(0).apply(formatar_moeda)
+        if "Receita" in df_grid.columns:
+            df_grid["Receita"] = df_grid["Receita"].fillna(0).apply(formatar_moeda)
         if "Backlog\nAtual\n(Qtd)" in df_grid.columns:
             df_grid["Backlog\nAtual\n(Qtd)"] = df_grid["Backlog\nAtual\n(Qtd)"].fillna(0).astype(int)
         if "Regra\nComercial\nBacklog" in df_grid.columns:
             df_grid["Regra\nComercial\nBacklog"] = df_grid["Regra\nComercial\nBacklog"].fillna(0)
         if "Receita\nBacklog" in df_grid.columns:
             df_grid["Receita\nBacklog"] = df_grid["Receita\nBacklog"].fillna(0).apply(formatar_moeda)
-
+        if "Produção\nQtd" in df_grid.columns:
+            df_grid["Produção\nQtd"] = df_grid["Produção\nQtd"].fillna(0).astype(int)
         # ============================================================================
 
         cell_style_total = JsCode("""
@@ -381,6 +537,11 @@ def page_backlog_visao_geral():
             "Receita\nBacklog"
         ]
 
+        forecast_display_cols = [
+            c for c in df_grid.columns
+            if isinstance(c, str) and re.match(r"^[A-Za-zÀ-ÿ]+/\d{4}$", c)
+        ]
+
         colunas_estrategia = [
             "Estratégia\nde Redes",
             "Receita\nEstratégia",
@@ -391,12 +552,13 @@ def page_backlog_visao_geral():
             "Backlog\nAtual\n(Qtd)",
             "Regra\nComercial\nBacklog",
             "Receita\nBacklog",
+            "Produção\nQtd",
+            "Receita",
             "Cliente",
             "Vendas",
             "PJE",
             "A ajustar",
-            "Maio/2026",
-            "Junho/2026",
+            *forecast_display_cols,
             "Outros Meses",
             "A definir",
             "S/ Carimbo",
@@ -451,11 +613,12 @@ def page_backlog_visao_geral():
 
         for col in colunas_estrategia:
             for gb in (gb_geral, gb_estrategia):
+                header_class = "header-producao" if col in ["Produção\nQtd", "Receita"] else "header-estrategia"
                 gb.configure_column(
                     col,
                     type=["numericColumn"],
                     cellStyle=cell_style_total,
-                    headerClass="header-estrategia",
+                    headerClass=header_class,
                     width=largura_coluna_estrategia,
                     minWidth=largura_coluna_estrategia,
                     maxWidth=largura_coluna_estrategia,
@@ -563,6 +726,23 @@ def page_backlog_visao_geral():
                 "justify-content": "center !important",
                 "width": "100% !important"
             },
+            ".header-producao": {
+                "background-color": "#065f46 !important",
+                "color": "white !important",
+                "font-weight": "700 !important",
+                "text-align": "center !important",
+                "display": "flex !important",
+                "justify-content": "center !important",
+                "align-items": "center !important"
+            },
+            ".header-producao .ag-header-cell-label": {
+                "justify-content": "center !important"
+            },
+            ".header-producao .ag-header-cell-text": {
+                "text-align": "center !important",
+                "justify-content": "center !important",
+                "width": "100% !important"
+            },
             ".header-pendencias": {
                 "background-color": "#fecaca !important",
                 "color": "#991b1b !important",
@@ -622,6 +802,7 @@ def page_backlog_visao_geral():
             forecast_inicio_children = []
             forecast_children = []
             backlog_children = []
+            production_children = []
             pendencias_children = []
             sem_carimbo_children = []
             ungrouped_defs = []
@@ -646,7 +827,7 @@ def page_backlog_visao_geral():
                     elif field == "Receita\nForecast":
                         child["headerName"] = "Receita"
                     forecast_inicio_children.append(child)
-                elif field in ["Maio/2026", "Junho/2026", "Outros Meses", "A ajustar", "A definir"]:
+                elif re.match(r"^[A-Za-zÀ-ÿ]+/\d{4}$", str(field)) or field in ["Outros Meses", "A ajustar", "A definir"]:
                     child = col_def.copy()
                     forecast_children.append(child)
                 elif field in ["Backlog\nAtual\n(Qtd)", "Regra\nComercial\nBacklog", "Receita\nBacklog"]:
@@ -658,6 +839,13 @@ def page_backlog_visao_geral():
                     elif field == "Receita\nBacklog":
                         child["headerName"] = "Receita"
                     backlog_children.append(child)
+                elif field in ["Produção\nQtd", "Receita"]:
+                    child = col_def.copy()
+                    if field == "Produção\nQtd":
+                        child["headerName"] = "Qtd"
+                    else:
+                        child["headerName"] = "Receita"
+                    production_children.append(child)
                 elif field in ["Cliente", "Vendas", "PJE"]:
                     child = col_def.copy()
                     pendencias_children.append(child)
@@ -685,6 +873,12 @@ def page_backlog_visao_geral():
                     "children": backlog_children
                 }
                 new_defs.append(backlog_group_def)
+            if production_children:
+                producao_group_def = {
+                    "headerName": "Produção",
+                    "children": production_children
+                }
+                new_defs.append(producao_group_def)
             if strategy_children:
                 strategy_group_def = {
                     "headerName": "Backlog Total",
@@ -731,6 +925,8 @@ def page_backlog_visao_geral():
                 c for c in [
                     "CLIENTE",
                     "TOTAL",
+                    "Produção\nQtd",
+                    "Receita",
                     "GROSS",
                     "SERVIÇO",
                     "OUTROS",
@@ -755,6 +951,8 @@ def page_backlog_visao_geral():
                 c for c in list(dict.fromkeys([
                     "CLIENTE",
                     "TOTAL",
+                    "Produção\nQtd",
+                    "Receita",
                     "Forecast\nInício Mês\n(Qtd)",
                     "Regra\nComercial",
                     "Receita\nForecast",
@@ -767,8 +965,7 @@ def page_backlog_visao_geral():
                     "Estratégia\nde Redes",
                     "Receita\nEstratégia",
                     "Regra\nComercial\nEstratégia",
-                    "Maio/2026",
-                    "Junho/2026",
+                    *forecast_display_cols,
                     "Outros Meses",
                     "A ajustar",
                     "A definir",

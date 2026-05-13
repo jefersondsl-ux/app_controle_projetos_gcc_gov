@@ -1,0 +1,6 @@
+carimbo_prefixo,cliente
+# Adicione abaixo os prefixos que não têm cliente em d_Controle_Projetos
+# Formato: prefixo/ano,NOME DO CLIENTE
+# Exemplo:
+# 103/24,BANCO DO BRASIL
+# 41/23,CAIXA ECONOMICA FEDERAL

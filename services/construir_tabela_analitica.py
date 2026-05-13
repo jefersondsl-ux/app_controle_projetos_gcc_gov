@@ -110,6 +110,21 @@ def construir_tabela_analitica(
     # garantir chave
     producao_proj["IDP_PROJETO"] = producao_proj["IDP_PROJETO"].astype(str).str.strip()
 
+    # garantir que a produção tenha apenas uma linha por projeto antes do merge
+    if "IDP_PROJETO" in producao_proj.columns:
+        agg_cols = {}
+        if "Circuitos_Producao" in producao_proj.columns:
+            agg_cols["Circuitos_Producao"] = "sum"
+        if "Receita_Producao" in producao_proj.columns:
+            agg_cols["Receita_Producao"] = "sum"
+
+        if agg_cols:
+            producao_proj = (
+                producao_proj
+                .groupby("IDP_PROJETO", as_index=False)
+                .agg(agg_cols)
+            )
+
     # =============================
     # DIÁRIO POR PROJETO
     # =============================

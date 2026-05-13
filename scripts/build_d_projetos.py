@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parent
 MAPPINGS_DIR = ROOT / "mappings"
 QA_REPORT_DIR = ROOT / "reports"
 IDP_OVERRIDES_PATH = MAPPINGS_DIR / "idp_overrides.csv"
+CLIENTE_OVERRIDES_PATH = MAPPINGS_DIR / "cliente_overrides.csv"
 
 
 # ===============================
@@ -47,6 +48,36 @@ def apply_idp_overrides(df, overrides, cols=("IDP_PROJETO",)):
             df[col] = df[col].apply(
                 lambda v: overrides.get(str(v).strip(), v) if pd.notna(v) else v
             )
+    return df
+
+
+def load_cliente_overrides(path):
+    """Carrega mapeamento de CARIMBO_PREFIXO → CLIENTE."""
+    if not Path(path).exists():
+        return {}
+
+    df = pd.read_csv(path, dtype=str).fillna("")
+    if "carimbo_prefixo" not in df.columns or "cliente" not in df.columns:
+        raise ValueError(f"Arquivo de overrides de cliente inválido: {path}")
+
+    return {
+        row["carimbo_prefixo"].strip(): row["cliente"].strip()
+        for _, row in df.iterrows()
+        if row["carimbo_prefixo"].strip() and row["cliente"].strip()
+    }
+
+
+def apply_cliente_overrides(df, overrides):
+    """Aplica overrides de cliente baseado em CARIMBO_PREFIXO."""
+    if not overrides or "CARIMBO_PREFIXO" not in df.columns:
+        return df
+
+    df["CLIENTE"] = df.apply(
+        lambda row: overrides.get(str(row["CARIMBO_PREFIXO"]).strip(), row.get("CLIENTE"))
+        if pd.notna(row.get("CARIMBO_PREFIXO"))
+        else row.get("CLIENTE"),
+        axis=1
+    )
     return df
 
 
@@ -199,6 +230,15 @@ df_projetos = (
 )
 
 # ===============================
+# APLICAR OVERRIDES DE CLIENTE
+# ===============================
+
+cliente_overrides = load_cliente_overrides(CLIENTE_OVERRIDES_PATH)
+if cliente_overrides:
+    print(f"\nAplicando {len(cliente_overrides)} override(s) de cliente...")
+    df_projetos = apply_cliente_overrides(df_projetos, cliente_overrides)
+
+# ===============================
 # CHAVE SURROGATE
 # ===============================
 
@@ -278,6 +318,10 @@ with pd.ExcelWriter(QA_REPORT_DIR / "qa_d_projetos.xlsx", engine="openpyxl") as 
         list(idp_overrides.items()),
         columns=["idp_source", "idp_target"]
     ).to_excel(writer, sheet_name="idp_overrides", index=False)
+    pd.DataFrame(
+        list(cliente_overrides.items()),
+        columns=["carimbo_prefixo", "cliente"]
+    ).to_excel(writer, sheet_name="cliente_overrides", index=False)
 
 print(f"\nValidações:")
 print(f"- Conflitos de IDP por prefixo: {len(conflicts)}")
