@@ -553,3 +553,66 @@ def matriz_backlog_por_projeto(df_backlog, df_controle, df_d_projetos=None):
         df_group["FORECAST_DELTA_RECEITA"] = 0
 
     return df_group
+
+# ==============================
+# SÉRIE TEMPORAL: CIRCUITOS POR MÊS
+# ==============================
+
+def circuitos_por_mes_cliente(df_backlog, cliente_selecionado="Todos"):
+    """
+    Agrega quantidade de circuitos por mês de previsão de ativação
+    para um cliente específico ou todos os clientes.
+    
+    Parâmetros:
+    - df_backlog: DataFrame com dados de backlog
+    - cliente_selecionado: Cliente específico ou "Todos"
+    
+    Retorna:
+    - DataFrame com colunas: Mês (YYYY-MM), Quantidade
+    """
+    
+    if df_backlog.empty:
+        return pd.DataFrame(columns=["Mês", "Quantidade"])
+    
+    df = df_backlog.copy()
+    
+    # Normalizar cliente para comparação
+    if "CLIENTE" in df.columns:
+        df["CLIENTE"] = df["CLIENTE"].apply(normalizar_cliente)
+    
+    # Filtrar por cliente se não for "Todos"
+    if cliente_selecionado != "Todos":
+        cliente_norm = normalizar_cliente(cliente_selecionado)
+        df = df[df["CLIENTE"] == cliente_norm]
+    
+    # Verificar se tem a coluna de data
+    if "DATA_PREVISAO_ATIVACAO_CLIENTE" not in df.columns:
+        return pd.DataFrame(columns=["Mês", "Quantidade"])
+    
+    # Converter para datetime
+    df["DATA_PREVISAO_ATIVACAO_CLIENTE"] = pd.to_datetime(
+        df["DATA_PREVISAO_ATIVACAO_CLIENTE"],
+        errors="coerce"
+    )
+    
+    # Remover nulos
+    df = df[df["DATA_PREVISAO_ATIVACAO_CLIENTE"].notna()]
+    
+    if df.empty:
+        return pd.DataFrame(columns=["Mês", "Quantidade"])
+    
+    # Extrair ano-mês
+    df["Mês"] = df["DATA_PREVISAO_ATIVACAO_CLIENTE"].dt.to_period("M")
+    
+    # Contar circuitos por mês
+    resultado = (
+        df
+        .groupby("Mês", as_index=False)
+        .agg(Quantidade=("COD_CIR", "count"))
+        .sort_values("Mês")
+    )
+    
+    # Converter período de volta para string (YYYY-MM)
+    resultado["Mês"] = resultado["Mês"].astype(str)
+    
+    return resultado
