@@ -14,6 +14,7 @@ from pages.visao_operacional import page_visao_operacional
 from pages.planilha_inteligente import page_planilha_inteligente
 from pages.auditoria_bases import page_auditoria
 from pages.backlog_visao_geral import page_backlog_visao_geral
+from pages.backlog_pendencias_tarefas import page_backlog_pendencias_tarefas
 
 # NOVO
 from services.carregar_bases import (
@@ -198,7 +199,8 @@ PAGINAS = {
     "Painel Operacional": (page_visao_operacional, True),
     "Planilha Inteligente": (page_planilha_inteligente, True),
     "Auditoria das Bases": (page_auditoria, True),
-    "Painel Backlog": (page_backlog_visao_geral, True)
+    "Painel Backlog": (page_backlog_visao_geral, True),
+    "Pendencias Backlog": (page_backlog_pendencias_tarefas, True)
 }
 
 if menu in PAGINAS:

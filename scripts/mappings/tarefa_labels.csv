@@ -1,0 +1,25 @@
+cod_tarefa,label_amigavel,responsavel_macro
+IT0301,Autorizar entrada,VENDAS
+IT0302,Esclarecimento proj. especiais,PJE
+IT0304,Esclarecimento de vendas,VENDAS
+IT0305,Agendar com vendas,VENDAS
+IT0306,Suporte vendas,VENDAS
+IT0307,Esclarecimento proj. especiais recurso,PJE
+IT0501,Autorizar entrada condominio/datacenter,CLIENTE
+IT0502,Providenciar equipamento,CLIENTE
+IT0503,Finalizar infra/rede,CLIENTE
+IT0504,Atualizar dados de contato,CLIENTE
+IT0506,Informar data de agendamento,CLIENTE
+IT0507,Validar entrega do acesso/servico,CLIENTE
+IT0508,Conveniencia cliente,CLIENTE
+IT0509,Negociar data de agendamento,CLIENTE
+IT0510,Informar dados para configuracao,CLIENTE
+IT0511,Ajustar CNPJ,CLIENTE
+IT0512,Atualizar dados de contato PA,CLIENTE
+IT0514,Confirmar data agendada BLC,CLIENTE
+IT0515,Autorizar entrada condominio/datacenter PA,CLIENTE
+IT0516,Informar data de agendamento PA,CLIENTE
+IT0517,Informar cronograma,CLIENTE
+IT0518,Informar data de agendamento blacklist,CLIENTE
+IT0519,Validar entrega blacklist,CLIENTE
+IT0520,Aguardando confirmacao de agenda,CLIENTE

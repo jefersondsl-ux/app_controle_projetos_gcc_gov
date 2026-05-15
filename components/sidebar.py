@@ -10,7 +10,8 @@ def render_sidebar():
             "Painel Operacional",
             "Planilha Inteligente",
             "Auditoria das Bases",
-            "Painel Backlog"
+            "Painel Backlog",
+            "Pendencias Backlog"
         ]
     )
 
