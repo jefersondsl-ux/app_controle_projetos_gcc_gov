@@ -7,7 +7,7 @@ from st_aggrid import JsCode
 import streamlit.components.v1 as components
 
 from services.carregar_bases import carregar_backlog, carregar_projetos, carregar_controle, carregar_producao
-from services.backlog_analytics import resumo_backlog, resumo_estrategia, matriz_backlog_por_projeto, normalizar_cliente
+from services.backlog_analytics import resumo_backlog, resumo_estrategia, matriz_backlog_por_projeto, normalizar_cliente, circuitos_por_mes_cliente
 from components.cards import render_card
 from st_aggrid import AgGrid, GridOptionsBuilder
 
@@ -1471,6 +1471,48 @@ def page_backlog_visao_geral():
             allow_unsafe_jscode=True,
             custom_css=custom_css
         )
+
+        # ==============================
+        # SÉRIE TEMPORAL: CIRCUITOS POR MÊS
+        # ==============================
+
+        st.divider()
+        st.markdown("### 📅 Circuitos por Mês de Ativação")
+
+        cliente_sel_visao = st.selectbox(
+            "Selecione o cliente para visualizar série temporal",
+            ["Todos"] + sorted(df_matriz["CLIENTE"].dropna().unique()),
+            key="cliente_visao_geral"
+        )
+
+        df_serie = circuitos_por_mes_cliente(df_backlog, cliente_sel_visao)
+
+        if not df_serie.empty:
+            fig_serie = go.Figure(
+                data=[
+                    go.Bar(
+                        x=df_serie["Mês"],
+                        y=df_serie["Quantidade"],
+                        marker_color="#0369A1",
+                        text=df_serie["Quantidade"],
+                        textposition="outside",
+                        cliponaxis=False,
+                    )
+                ]
+            )
+
+            fig_serie.update_layout(
+                title=f"Circuitos por Mês - {cliente_sel_visao}",
+                xaxis_title="Mês de Ativação Prevista",
+                yaxis_title="Quantidade de Circuitos",
+                height=350,
+                showlegend=False,
+                margin=dict(l=10, r=10, t=70, b=10),
+            )
+
+            st.plotly_chart(fig_serie, use_container_width=True)
+        else:
+            st.warning(f"Nenhum circuito encontrado para {cliente_sel_visao}")
 
     with tab_estrategia:
         st.markdown("### Backlog - Estratégia de Redes")
