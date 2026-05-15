@@ -2,6 +2,7 @@ import re
 import streamlit as st
 import pandas as pd
 import io
+import plotly.graph_objects as go
 from st_aggrid import JsCode
 import streamlit.components.v1 as components
 
@@ -30,8 +31,6 @@ def formatar_moeda(valor):
 # ==============================
 
 def page_backlog_visao_geral():
-
-    st.divider()
 
     # ==============================
     # CARREGAR BASE
@@ -183,6 +182,12 @@ def page_backlog_visao_geral():
     resumo = resumo_backlog(df_backlog)
     resumo_estrat = resumo_estrategia(df_backlog)
 
+    total_receita_geral = 0.0
+    if "DELTA_RECEITA_GERAL" in df_matriz.columns:
+        total_receita_geral = pd.to_numeric(df_matriz["DELTA_RECEITA_GERAL"], errors="coerce").fillna(0).sum()
+    elif "RECEITA" in df_matriz.columns:
+        total_receita_geral = pd.to_numeric(df_matriz["RECEITA"], errors="coerce").fillna(0).sum()
+
     def _format_date(dt):
         if pd.isna(dt):
             return "Sem data"
@@ -201,29 +206,24 @@ def page_backlog_visao_geral():
     if "DATA_ENTRADA_BACKLOG" in df_backlog.columns:
         ultima_data_backlog = pd.to_datetime(df_backlog["DATA_ENTRADA_BACKLOG"], errors="coerce").max()
 
-    # título e cards na mesma linha com alinhamento à direita
-    title_col, spacer, data_col1, data_col2 = st.columns([3, 0.5, 1, 1])
-
-    with title_col:
-        st.markdown("### Painel Backlog")
-
-    with data_col1:
-        st.markdown("**Última Atualização**")
-        st.markdown(f"<span style='font-size:18px'>{_format_datetime(ultima_atualizacao_bases)}</span>", unsafe_allow_html=True)
-        #st.markdown("<span style='color:#94A3B8; font-size:12px'>Último DATA_REPORT carregado</span>", unsafe_allow_html=True)
-
-    with data_col2:
-        st.markdown("**Última Entrada**")
-        st.markdown(f"<span style='font-size:18px'>{_format_date(ultima_data_backlog)}</span>", unsafe_allow_html=True)
-        #st.markdown("<span style='color:#94A3B8; font-size:12px'>Última DATA_ENTRADA_BACKLOG</span>", unsafe_allow_html=True)
-
-    # Alerta de produção
-    if "PRODUCAO_CIRCUITOS" in df_matriz.columns:
-        clientes_com_producao = (df_matriz["PRODUCAO_CIRCUITOS"] > 0).sum()
-        total_producao = df_matriz["PRODUCAO_CIRCUITOS"].sum()
-        if clientes_com_producao > 0:
-            st.info(f"📊 **Produção integrada:** {clientes_com_producao} cliente(s) com {int(total_producao)} circuitos produzidos")
-
+    st.markdown("### Painel Backlog")
+    
+    st.markdown(
+        f"""
+        <div style="display:flex; justify-content:flex-end; align-items:flex-start; gap:24px; text-align:right; margin-bottom:16px;">
+            <div style="min-width:170px;">
+                <div style="font-size:12px; font-weight:700; line-height:1.0; color:#CBD5E1;">Última Atualização</div>
+                <div style="font-size:14px; line-height:1.0; margin-top:2px; color:#F8FAFC;">{_format_datetime(ultima_atualizacao_bases)}</div>
+            </div>
+            <div style="min-width:170px;">
+                <div style="font-size:12px; font-weight:700; line-height:1.0; color:#CBD5E1;">Última Entrada</div>
+                <div style="font-size:14px; line-height:1.0; margin-top:2px; color:#F8FAFC;">{_format_date(ultima_data_backlog)}</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    
     st.divider()
 
     tab_geral, tab_estrategia = st.tabs([
@@ -232,36 +232,88 @@ def page_backlog_visao_geral():
     ])
 
     with tab_geral:
-        col1, col2, col3, col4 = st.columns(4)
+        st.markdown("### Backlog - Visão Geral")
+        
+        st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
 
-        with col1:
+        col_total, col_receita, _ = st.columns([0.72, 0.72, 4.56])
+
+        with col_total:
             render_card("Total Backlog", resumo["total"], "", "#F97316")
 
-        with col2:
-            render_card("Gross", resumo["gross"], "", "#F97316")
+        with col_receita:
+            render_card("Receita Geral", formatar_moeda(total_receita_geral), "", "#38BDF8")
 
-        with col3:
-            render_card("Serviço", resumo["servico"], "", "#F97316")
+        st.markdown("<div style='height:18px'></div>", unsafe_allow_html=True)
 
-        with col4:
-            render_card("Outros", resumo["outros"], "", "#F97316")
+        col_g1, col_gap, col_g2 = st.columns([1, 0.18, 1])
 
-        col1, col2, col3, col4, col5 = st.columns(5)
+        with col_g1:
+            dados_classificacao = pd.DataFrame(
+                {
+                    "Categoria": ["Gross", "Serviço", "Outros"],
+                    "Valor": [resumo["gross"], resumo["servico"], resumo["outros"]],
+                }
+            )
 
-        with col1:
-            render_card("Internet", resumo["internet"], "", "#F97316")
+            fig_classificacao = go.Figure(
+                data=[
+                    go.Bar(
+                        x=dados_classificacao["Categoria"],
+                        y=dados_classificacao["Valor"],
+                        marker_color=["#C2410C", "#9A3412", "#7C2D12"],
+                        text=dados_classificacao["Valor"],
+                        textposition="outside",
+                        cliponaxis=False,
+                    )
+                ]
+            )
 
-        with col2:
-            render_card("Dados", resumo["dados"], "", "#F97316")
+            fig_classificacao.update_layout(
+                title="Backlog por Classificação",
+                xaxis_title="",
+                yaxis_title="Quantidade",
+                height=280,
+                showlegend=False,
+                margin=dict(l=10, r=10, t=70, b=10),
+            )
 
-        with col3:
-            render_card("Voz", resumo["voz"], "", "#F97316")
+            st.plotly_chart(fig_classificacao, use_container_width=True)
 
-        with col4:
-            render_card("WiFi", resumo["wifi"], "", "#F97316")
+        with col_gap:
+            st.markdown("&nbsp;", unsafe_allow_html=True)
 
-        with col5:
-            render_card("Outros Produtos", resumo.get("outros_produtos", 0), "", "#F97316")
+        with col_g2:
+            dados_produto = pd.DataFrame(
+                {
+                    "Categoria": ["Internet", "Dados", "Voz", "WiFi"],
+                    "Valor": [resumo["internet"], resumo["dados"], resumo["voz"], resumo["wifi"]],
+                }
+            )
+
+            fig_produto = go.Figure(
+                data=[
+                    go.Bar(
+                        x=dados_produto["Categoria"],
+                        y=dados_produto["Valor"],
+                        marker_color=["#0369A1", "#075985", "#0C4A6E", "#082F49"],
+                        text=dados_produto["Valor"],
+                        textposition="outside",
+                        cliponaxis=False,
+                    )
+                ]
+            )
+
+            fig_produto.update_layout(
+                title="Backlog por Produto",
+                xaxis_title="",
+                yaxis_title="Quantidade",
+                height=280,
+                showlegend=False,
+                margin=dict(l=10, r=10, t=70, b=10),
+            )
+
+            st.plotly_chart(fig_produto, use_container_width=True)
 
         st.divider()
         st.markdown("### 📈 Matriz Analítica por Cliente - Visão Geral")
@@ -296,12 +348,19 @@ def page_backlog_visao_geral():
             "RECEITA",
 
             "GROSS",
+            "RECEITA_GROSS",
             "SERVICO",
+            "RECEITA_SERVICO",
             "OUTROS",
+            "RECEITA_OUTROS",
             "INTERNET",
+            "RECEITA_INTERNET",
             "DADOS",
+            "RECEITA_DADOS",
             "VOZ",
+            "RECEITA_VOZ",
             "WIFI",
+            "RECEITA_WIFI",
             "DELTA_RECEITA_GERAL",
 
             "FORECAST_INICIO_MES",
@@ -324,11 +383,17 @@ def page_backlog_visao_geral():
             "FORECAST_A_DEFINIR",
         ]
 
-        # manter apenas colunas existentes (evita erro)
-        colunas_existentes = [c for c in colunas_ordem if c in df_grid.columns]
-
         if "OUTROS" not in df_grid.columns:
             df_grid["OUTROS"] = df_grid["TOTAL"] - (df_grid["GROSS"] + df_grid["SERVICO"])
+
+        if "RECEITA_OUTROS" not in df_grid.columns:
+            receita_geral = pd.to_numeric(df_grid.get("DELTA_RECEITA_GERAL", 0), errors="coerce").fillna(0)
+            receita_gross = pd.to_numeric(df_grid.get("RECEITA_GROSS", 0), errors="coerce").fillna(0)
+            receita_servico = pd.to_numeric(df_grid.get("RECEITA_SERVICO", 0), errors="coerce").fillna(0)
+            df_grid["RECEITA_OUTROS"] = receita_geral - receita_gross - receita_servico
+
+        # manter apenas colunas existentes (evita erro)
+        colunas_existentes = [c for c in colunas_ordem if c in df_grid.columns]
 
         df_grid = df_grid[colunas_existentes]
 
@@ -360,13 +425,20 @@ def page_backlog_visao_geral():
         mapa_renomeio = {
             "TOTAL": "TOTAL",
             "GROSS": "GROSS",
+            "RECEITA_GROSS": "Receita\nGross",
             "SERVICO": "SERVIÇO",
+            "RECEITA_SERVICO": "Receita\nServiço",
             "RECEITA": "Receita",
             "OUTROS": "OUTROS",
+            "RECEITA_OUTROS": "Receita\nOutros",
             "INTERNET": "INTERNET",
+            "RECEITA_INTERNET": "Receita\nInternet",
             "DADOS": "DADOS",
+            "RECEITA_DADOS": "Receita\nDados",
             "VOZ": "VOZ",
+            "RECEITA_VOZ": "Receita\nVoz",
             "WIFI": "WIFI",
+            "RECEITA_WIFI": "Receita\nWiFi",
             "DELTA_RECEITA_GERAL": "Receita\nGeral",
             "ESTRATEGIA": "Estratégia\nde Redes",
             "DELTA_RECEITA_ESTRATEGIA": "Receita\nEstratégia",
@@ -413,12 +485,19 @@ def page_backlog_visao_geral():
         colunas_numericas = [
             "TOTAL",
             "GROSS",
+            "Receita\nGross",
             "SERVIÇO",
+            "Receita\nServiço",
             "OUTROS",
+            "Receita\nOutros",
             "INTERNET",
+            "Receita\nInternet",
             "DADOS",
+            "Receita\nDados",
             "VOZ",
+            "Receita\nVoz",
             "WIFI",
+            "Receita\nWiFi",
             "Receita\nGeral",
             "Estratégia\nde Redes",
             "Receita\nEstratégia",
@@ -477,11 +556,50 @@ def page_backlog_visao_geral():
 
         df_grid = pd.concat([df_total, df_dados], ignore_index=True)
 
+        def obter_maximo_coluna(coluna):
+            if coluna not in df_grid.columns:
+                return 0.0
+            return pd.to_numeric(
+                df_grid.loc[df_grid["CLIENTE"] != "TOTAL GERAL", coluna],
+                errors="coerce"
+            ).fillna(0).max()
+
+        maximos_barras = {
+            "TOTAL": obter_maximo_coluna("TOTAL"),
+            "Receita\nGeral": obter_maximo_coluna("Receita\nGeral"),
+            "GROSS": obter_maximo_coluna("GROSS"),
+            "Receita\nGross": obter_maximo_coluna("Receita\nGross"),
+            "SERVIÇO": obter_maximo_coluna("SERVIÇO"),
+            "Receita\nServiço": obter_maximo_coluna("Receita\nServiço"),
+            "OUTROS": obter_maximo_coluna("OUTROS"),
+            "Receita\nOutros": obter_maximo_coluna("Receita\nOutros"),
+            "INTERNET": obter_maximo_coluna("INTERNET"),
+            "Receita\nInternet": obter_maximo_coluna("Receita\nInternet"),
+            "DADOS": obter_maximo_coluna("DADOS"),
+            "Receita\nDados": obter_maximo_coluna("Receita\nDados"),
+            "VOZ": obter_maximo_coluna("VOZ"),
+            "Receita\nVoz": obter_maximo_coluna("Receita\nVoz"),
+            "WIFI": obter_maximo_coluna("WIFI"),
+            "Receita\nWiFi": obter_maximo_coluna("Receita\nWiFi"),
+        }
+
         # ==============================
         # FORMATAR RECEITA (APÓS CALCULAR E FIXAR TOTAIS)
         # ==============================
         if "Receita\nGeral" in df_grid.columns:
             df_grid["Receita\nGeral"] = df_grid["Receita\nGeral"].apply(formatar_moeda)
+
+        for coluna_receita in [
+            "Receita\nGross",
+            "Receita\nServiço",
+            "Receita\nOutros",
+            "Receita\nInternet",
+            "Receita\nDados",
+            "Receita\nVoz",
+            "Receita\nWiFi",
+        ]:
+            if coluna_receita in df_grid.columns:
+                df_grid[coluna_receita] = df_grid[coluna_receita].fillna(0).apply(formatar_moeda)
 
         if "Receita\nEstratégia" in df_grid.columns:
             df_grid["Receita\nEstratégia"] = df_grid["Receita\nEstratégia"].fillna(0).apply(formatar_moeda)
@@ -512,12 +630,98 @@ def page_backlog_visao_geral():
                     'backgroundColor': '#020617',
                     'color': 'white',
                     'fontWeight': 'bold',
-                    'borderTop': '2px solid #38BDF8'
+                    'borderTop': '2px solid #94A3B8',
+                    'borderRight': '1px solid #94A3B8',
+                    'borderBottom': '1px solid #94A3B8',
+                    'borderLeft': '1px solid #94A3B8'
                 }
             }
             return null;
         }
         """)
+
+        def criar_cell_style_barra(maximo, cor_rgba, eh_moeda=False):
+            leitura_valor = """
+            var currentValue = Number(params.value || 0);
+            """
+
+            if eh_moeda:
+                leitura_valor = """
+            var rawValue = params.value;
+            var currentValue = 0;
+
+            if (typeof rawValue === 'number') {
+                currentValue = rawValue;
+            } else if (typeof rawValue === 'string') {
+                var texto = rawValue.replace('R$', '').trim();
+                var multiplicador = 1;
+
+                if (texto.endsWith('Bi')) {
+                    multiplicador = 1000000000;
+                    texto = texto.replace('Bi', '').trim();
+                } else if (texto.endsWith('Mi')) {
+                    multiplicador = 1000000;
+                    texto = texto.replace('Mi', '').trim();
+                } else if (texto.endsWith('K')) {
+                    multiplicador = 1000;
+                    texto = texto.replace('K', '').trim();
+                }
+
+                if (multiplicador === 1) {
+                    texto = texto.replace(/[.]/g, '');
+                }
+
+                texto = texto.replace(',', '.');
+                currentValue = parseFloat(texto || '0') * multiplicador;
+            }
+                """
+
+            return JsCode(f"""
+        function(params) {{
+            if (params.data && params.data.CLIENTE === 'TOTAL GERAL') {{
+                return {{
+                    'backgroundColor': '#020617',
+                    'color': 'white',
+                    'fontWeight': 'bold',
+                    'borderTop': '2px solid #94A3B8',
+                    'borderRight': '1px solid #94A3B8',
+                    'borderBottom': '1px solid #94A3B8',
+                    'borderLeft': '1px solid #94A3B8'
+                }};
+            }}
+
+            var maxValue = {float(maximo or 0)};
+            {leitura_valor}
+
+            if (!maxValue || isNaN(currentValue) || currentValue <= 0) {{
+                return null;
+            }}
+
+            var percent = Math.max(0, Math.min(100, (currentValue / maxValue) * 100));
+            return {{
+                'backgroundImage': 'linear-gradient(90deg, rgba({cor_rgba}, 0.20) 0%, rgba({cor_rgba}, 0.20) ' + percent + '%, transparent ' + percent + '%, transparent 100%)'
+            }};
+        }}
+        """)
+
+        cell_styles_barras = {
+            "TOTAL": criar_cell_style_barra(maximos_barras["TOTAL"], "148, 163, 184"),
+            "Receita\nGeral": criar_cell_style_barra(maximos_barras["Receita\nGeral"], "148, 163, 184", eh_moeda=True),
+            "GROSS": criar_cell_style_barra(maximos_barras["GROSS"], "194, 65, 12"),
+            "Receita\nGross": criar_cell_style_barra(maximos_barras["Receita\nGross"], "194, 65, 12", eh_moeda=True),
+            "SERVIÇO": criar_cell_style_barra(maximos_barras["SERVIÇO"], "154, 52, 18"),
+            "Receita\nServiço": criar_cell_style_barra(maximos_barras["Receita\nServiço"], "154, 52, 18", eh_moeda=True),
+            "OUTROS": criar_cell_style_barra(maximos_barras["OUTROS"], "124, 45, 18"),
+            "Receita\nOutros": criar_cell_style_barra(maximos_barras["Receita\nOutros"], "124, 45, 18", eh_moeda=True),
+            "INTERNET": criar_cell_style_barra(maximos_barras["INTERNET"], "3, 105, 161"),
+            "Receita\nInternet": criar_cell_style_barra(maximos_barras["Receita\nInternet"], "3, 105, 161", eh_moeda=True),
+            "DADOS": criar_cell_style_barra(maximos_barras["DADOS"], "7, 89, 133"),
+            "Receita\nDados": criar_cell_style_barra(maximos_barras["Receita\nDados"], "7, 89, 133", eh_moeda=True),
+            "VOZ": criar_cell_style_barra(maximos_barras["VOZ"], "12, 74, 110"),
+            "Receita\nVoz": criar_cell_style_barra(maximos_barras["Receita\nVoz"], "12, 74, 110", eh_moeda=True),
+            "WIFI": criar_cell_style_barra(maximos_barras["WIFI"], "8, 47, 73"),
+            "Receita\nWiFi": criar_cell_style_barra(maximos_barras["Receita\nWiFi"], "8, 47, 73", eh_moeda=True),
+        }
 
         gb_geral = GridOptionsBuilder.from_dataframe(df_grid)
         gb_estrategia = GridOptionsBuilder.from_dataframe(df_grid)
@@ -527,8 +731,10 @@ def page_backlog_visao_geral():
         # ==============================
 
         colunas_backlog = [
-            "TOTAL", "GROSS", "SERVIÇO",
-            "INTERNET", "DADOS", "VOZ", "WIFI", "Receita\nGeral"
+            "TOTAL", "GROSS", "Receita\nGross", "SERVIÇO", "Receita\nServiço",
+            "OUTROS", "Receita\nOutros",
+            "INTERNET", "Receita\nInternet", "DADOS", "Receita\nDados",
+            "VOZ", "Receita\nVoz", "WIFI", "Receita\nWiFi", "Receita\nGeral"
         ]
 
         colunas_backlog_atual = [
@@ -595,6 +801,10 @@ def page_backlog_visao_geral():
                     wrapHeaderText=True,
                     autoHeaderHeight=True
                 )
+
+        for coluna_barra, estilo_barra in cell_styles_barras.items():
+            if coluna_barra in df_grid.columns:
+                gb_geral.configure_column(coluna_barra, cellStyle=estilo_barra)
 
         for col in colunas_backlog_atual:
             for gb in (gb_geral, gb_estrategia):
@@ -709,6 +919,75 @@ def page_backlog_visao_geral():
                 "justify-content": "center !important",
                 "width": "100% !important"
             },
+            ".header-total-backlog-group": {
+                "background-color": "#1E293B !important",
+                "color": "white !important",
+                "font-weight": "700 !important",
+                "text-align": "center !important"
+            },
+            ".header-total-backlog-group .ag-header-group-cell-label": {
+                "justify-content": "center !important"
+            },
+            ".header-total-backlog-group .ag-header-group-cell-text": {
+                "text-align": "center !important",
+                "justify-content": "center !important",
+                "width": "100% !important"
+            },
+            ".header-total-backlog-child": {
+                "background-color": "#1E293B !important",
+                "color": "white !important",
+                "font-weight": "700 !important"
+            },
+            ".header-gross-group, .header-gross-child": {
+                "background-color": "#C2410C !important",
+                "color": "white !important",
+                "font-weight": "700 !important",
+                "text-align": "center !important"
+            },
+            ".header-servico-group, .header-servico-child": {
+                "background-color": "#9A3412 !important",
+                "color": "white !important",
+                "font-weight": "700 !important",
+                "text-align": "center !important"
+            },
+            ".header-outros-group, .header-outros-child": {
+                "background-color": "#7C2D12 !important",
+                "color": "white !important",
+                "font-weight": "700 !important",
+                "text-align": "center !important"
+            },
+            ".header-internet-group, .header-internet-child": {
+                "background-color": "#0369A1 !important",
+                "color": "white !important",
+                "font-weight": "700 !important",
+                "text-align": "center !important"
+            },
+            ".header-dados-group, .header-dados-child": {
+                "background-color": "#075985 !important",
+                "color": "white !important",
+                "font-weight": "700 !important",
+                "text-align": "center !important"
+            },
+            ".header-voz-group, .header-voz-child": {
+                "background-color": "#0C4A6E !important",
+                "color": "white !important",
+                "font-weight": "700 !important",
+                "text-align": "center !important"
+            },
+            ".header-wifi-group, .header-wifi-child": {
+                "background-color": "#082F49 !important",
+                "color": "white !important",
+                "font-weight": "700 !important",
+                "text-align": "center !important"
+            },
+            ".header-gross-group .ag-header-group-cell-label, .header-servico-group .ag-header-group-cell-label, .header-outros-group .ag-header-group-cell-label, .header-internet-group .ag-header-group-cell-label, .header-dados-group .ag-header-group-cell-label, .header-voz-group .ag-header-group-cell-label, .header-wifi-group .ag-header-group-cell-label": {
+                "justify-content": "center !important"
+            },
+            ".header-gross-group .ag-header-group-cell-text, .header-servico-group .ag-header-group-cell-text, .header-outros-group .ag-header-group-cell-text, .header-internet-group .ag-header-group-cell-text, .header-dados-group .ag-header-group-cell-text, .header-voz-group .ag-header-group-cell-text, .header-wifi-group .ag-header-group-cell-text": {
+                "text-align": "center !important",
+                "justify-content": "center !important",
+                "width": "100% !important"
+            },
             ".header-estrategia": {
                 "background-color": "#facc15 !important",
                 "color": "#1f2937 !important",
@@ -765,6 +1044,13 @@ def page_backlog_visao_geral():
                 "text-align": "center !important",
                 "width": "100% !important"
             },
+            ".ag-header": {
+                "border-bottom": "1px solid #94A3B8 !important"
+            },
+            ".ag-header-group-cell": {
+                "border-right": "1px solid #94A3B8 !important",
+                "border-bottom": "1px solid #94A3B8 !important"
+            },
             ".ag-header-group-cell-text": {
                 "text-align": "center !important",
                 "justify-content": "center !important",
@@ -774,9 +1060,19 @@ def page_backlog_visao_geral():
                 "justify-content": "center !important",
                 "text-align": "center !important"
             },
+            ".ag-header-cell": {
+                "border-right": "1px solid #94A3B8 !important",
+                "border-bottom": "1px solid #94A3B8 !important"
+            },
+            ".header-receita-separador": {
+                "border-right": "2px solid #CBD5E1 !important"
+            },
             ".ag-header-cell-text": {
                 "text-align": "center !important",
                 "justify-content": "center !important"
+            },
+            ".cell-receita-separador": {
+                "border-right": "2px solid #CBD5E1 !important"
             }
         }
 
@@ -794,6 +1090,175 @@ def page_backlog_visao_geral():
 
         grid_options_geral = gb_geral.build()
         grid_options_estrategia = gb_estrategia.build()
+
+        # Agrupamento hierárquico da Visão Geral: classificação/produto com Qtd + Receita
+        if "columnDefs" in grid_options_geral:
+            original_defs_geral = grid_options_geral["columnDefs"]
+            total_backlog_children = []
+            grupos_hierarquicos = {
+                "GROSS": [],
+                "SERVIÇO": [],
+                "OUTROS": [],
+                "INTERNET": [],
+                "DADOS": [],
+                "VOZ": [],
+                "WIFI": [],
+            }
+            ungrouped_defs_geral = []
+
+            for col_def in original_defs_geral:
+                field = col_def.get("field")
+
+                if field == "TOTAL":
+                    child = col_def.copy()
+                    child["headerName"] = "Qtd"
+                    child["headerClass"] = "header-total-backlog-child"
+                    total_backlog_children.append(child)
+                elif field == "Receita\nGeral":
+                    child = col_def.copy()
+                    child["headerName"] = "Receita"
+                    child["headerClass"] = "header-total-backlog-child"
+                    total_backlog_children.append(child)
+                elif field == "GROSS":
+                    child = col_def.copy()
+                    child["headerName"] = "Qtd"
+                    child["headerClass"] = "header-gross-child"
+                    grupos_hierarquicos["GROSS"].append(child)
+                elif field == "Receita\nGross":
+                    child = col_def.copy()
+                    child["headerName"] = "Receita"
+                    child["headerClass"] = "header-gross-child"
+                    grupos_hierarquicos["GROSS"].append(child)
+                elif field == "SERVIÇO":
+                    child = col_def.copy()
+                    child["headerName"] = "Qtd"
+                    child["headerClass"] = "header-servico-child"
+                    grupos_hierarquicos["SERVIÇO"].append(child)
+                elif field == "Receita\nServiço":
+                    child = col_def.copy()
+                    child["headerName"] = "Receita"
+                    child["headerClass"] = "header-servico-child"
+                    grupos_hierarquicos["SERVIÇO"].append(child)
+                elif field == "OUTROS":
+                    child = col_def.copy()
+                    child["headerName"] = "Qtd"
+                    child["headerClass"] = "header-outros-child"
+                    grupos_hierarquicos["OUTROS"].append(child)
+                elif field == "Receita\nOutros":
+                    child = col_def.copy()
+                    child["headerName"] = "Receita"
+                    child["headerClass"] = "header-outros-child"
+                    grupos_hierarquicos["OUTROS"].append(child)
+                elif field == "INTERNET":
+                    child = col_def.copy()
+                    child["headerName"] = "Qtd"
+                    child["headerClass"] = "header-internet-child"
+                    grupos_hierarquicos["INTERNET"].append(child)
+                elif field == "Receita\nInternet":
+                    child = col_def.copy()
+                    child["headerName"] = "Receita"
+                    child["headerClass"] = "header-internet-child"
+                    grupos_hierarquicos["INTERNET"].append(child)
+                elif field == "DADOS":
+                    child = col_def.copy()
+                    child["headerName"] = "Qtd"
+                    child["headerClass"] = "header-dados-child"
+                    grupos_hierarquicos["DADOS"].append(child)
+                elif field == "Receita\nDados":
+                    child = col_def.copy()
+                    child["headerName"] = "Receita"
+                    child["headerClass"] = "header-dados-child"
+                    grupos_hierarquicos["DADOS"].append(child)
+                elif field == "VOZ":
+                    child = col_def.copy()
+                    child["headerName"] = "Qtd"
+                    child["headerClass"] = "header-voz-child"
+                    grupos_hierarquicos["VOZ"].append(child)
+                elif field == "Receita\nVoz":
+                    child = col_def.copy()
+                    child["headerName"] = "Receita"
+                    child["headerClass"] = "header-voz-child"
+                    grupos_hierarquicos["VOZ"].append(child)
+                elif field == "WIFI":
+                    child = col_def.copy()
+                    child["headerName"] = "Qtd"
+                    child["headerClass"] = "header-wifi-child"
+                    grupos_hierarquicos["WIFI"].append(child)
+                elif field == "Receita\nWiFi":
+                    child = col_def.copy()
+                    child["headerName"] = "Receita"
+                    child["headerClass"] = "header-wifi-child"
+                    grupos_hierarquicos["WIFI"].append(child)
+                else:
+                    ungrouped_defs_geral.append(col_def)
+
+            new_defs_geral = list(ungrouped_defs_geral)
+            if total_backlog_children:
+                new_defs_geral.append(
+                    {
+                        "headerName": "Total Backlog",
+                        "headerClass": "header-total-backlog-group",
+                        "children": total_backlog_children
+                    }
+                )
+            for grupo in ["GROSS", "SERVIÇO", "OUTROS", "INTERNET", "DADOS", "VOZ", "WIFI"]:
+                if grupos_hierarquicos[grupo]:
+                    group_def = {
+                        "headerName": grupo,
+                        "children": grupos_hierarquicos[grupo]
+                    }
+                    if grupo == "GROSS":
+                        group_def["headerClass"] = "header-gross-group"
+                    elif grupo == "SERVIÇO":
+                        group_def["headerClass"] = "header-servico-group"
+                    elif grupo == "OUTROS":
+                        group_def["headerClass"] = "header-outros-group"
+                    elif grupo == "INTERNET":
+                        group_def["headerClass"] = "header-internet-group"
+                    elif grupo == "DADOS":
+                        group_def["headerClass"] = "header-dados-group"
+                    elif grupo == "VOZ":
+                        group_def["headerClass"] = "header-voz-group"
+                    elif grupo == "WIFI":
+                        group_def["headerClass"] = "header-wifi-group"
+                    new_defs_geral.append(group_def)
+
+            grid_options_geral["columnDefs"] = new_defs_geral
+
+            colunas_receita_com_separador = {
+                "Receita\nGeral",
+                "Receita\nGross",
+                "Receita\nServiço",
+                "Receita\nOutros",
+                "Receita\nInternet",
+                "Receita\nDados",
+                "Receita\nVoz",
+                "Receita\nWiFi",
+            }
+
+            def aplicar_separador_receita(column_defs):
+                for column_def in column_defs:
+                    if "children" in column_def:
+                        aplicar_separador_receita(column_def["children"])
+                        continue
+
+                    field = column_def.get("field")
+                    if field not in colunas_receita_com_separador:
+                        continue
+
+                    header_class = column_def.get("headerClass")
+                    if header_class:
+                        column_def["headerClass"] = f"{header_class} header-receita-separador"
+                    else:
+                        column_def["headerClass"] = "header-receita-separador"
+
+                    cell_class = column_def.get("cellClass")
+                    if cell_class:
+                        column_def["cellClass"] = f"{cell_class} cell-receita-separador"
+                    else:
+                        column_def["cellClass"] = "cell-receita-separador"
+
+            aplicar_separador_receita(grid_options_geral["columnDefs"])
 
         # Agrupamento de cabeçalho para as três colunas de Forecast Início Mês
         if "columnDefs" in grid_options_estrategia:
@@ -928,12 +1393,19 @@ def page_backlog_visao_geral():
                     "Produção\nQtd",
                     "Receita",
                     "GROSS",
+                    "Receita\nGross",
                     "SERVIÇO",
+                    "Receita\nServiço",
                     "OUTROS",
+                    "Receita\nOutros",
                     "INTERNET",
+                    "Receita\nInternet",
                     "DADOS",
+                    "Receita\nDados",
                     "VOZ",
+                    "Receita\nVoz",
                     "WIFI",
+                    "Receita\nWiFi",
                     "Receita\nGeral",
                     "IS_TOTAL"
                 ]
@@ -1003,7 +1475,13 @@ def page_backlog_visao_geral():
     with tab_estrategia:
         st.markdown("### Backlog - Estratégia de Redes")
 
-        col1, col2, col3 = st.columns(3)
+        if "PRODUCAO_CIRCUITOS" in df_matriz.columns:
+            clientes_com_producao = (df_matriz["PRODUCAO_CIRCUITOS"] > 0).sum()
+            total_producao = df_matriz["PRODUCAO_CIRCUITOS"].sum()
+            if clientes_com_producao > 0:
+                st.info(f"📊 **Produção integrada:** {clientes_com_producao} cliente(s) com {int(total_producao)} circuitos produzidos")
+
+        col1, col2, col3, _ = st.columns([0.72, 0.72, 0.72, 3.84])
 
         with col1:
             render_card("Estratégia de Redes", resumo_estrat["total"], f"{resumo_estrat['perc']:.1f}% do Total", "#EAB308")

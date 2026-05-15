@@ -470,6 +470,14 @@ def matriz_backlog_por_projeto(df_backlog, df_controle, df_d_projetos=None):
     df["BACKLOG_REGRA_COMERCIAL"] = df["REGRA_COMERCIAL_PY"] * df["FLAG_BACKLOG_ATUAL_EST"]
     df["BACKLOG_DELTA_RECEITA"] = df["DELTA_RECEITA"] * df["FLAG_BACKLOG_ATUAL_EST"]
 
+    # Receita segmentada por classificação e por produto
+    df["RECEITA_GROSS"] = df["DELTA_RECEITA"] * df["FLAG_GROSS"]
+    df["RECEITA_SERVICO"] = df["DELTA_RECEITA"] * df["FLAG_SERVICO"]
+    df["RECEITA_INTERNET"] = df["DELTA_RECEITA"] * df["FLAG_INTERNET"]
+    df["RECEITA_DADOS"] = df["DELTA_RECEITA"] * df["FLAG_DADOS"]
+    df["RECEITA_VOZ"] = df["DELTA_RECEITA"] * df["FLAG_VOZ"]
+    df["RECEITA_WIFI"] = df["DELTA_RECEITA"] * df["FLAG_WIFI"]
+
     # =========================
     # AGREGAÇÃO
     # =========================
@@ -482,13 +490,19 @@ def matriz_backlog_por_projeto(df_backlog, df_controle, df_d_projetos=None):
 
             # classificação
             GROSS=("FLAG_GROSS", "sum"),
+            RECEITA_GROSS=("RECEITA_GROSS", "sum"),
             SERVICO=("FLAG_SERVICO", "sum"),
+            RECEITA_SERVICO=("RECEITA_SERVICO", "sum"),
 
             # produto
             INTERNET=("FLAG_INTERNET", "sum"),
+            RECEITA_INTERNET=("RECEITA_INTERNET", "sum"),
             DADOS=("FLAG_DADOS", "sum"),
+            RECEITA_DADOS=("RECEITA_DADOS", "sum"),
             VOZ=("FLAG_VOZ", "sum"),
+            RECEITA_VOZ=("RECEITA_VOZ", "sum"),
             WIFI=("FLAG_WIFI", "sum"),
+            RECEITA_WIFI=("RECEITA_WIFI", "sum"),
 
             # estratégia
             ESTRATEGIA=("FLAG_ESTRATEGIA", "sum"),

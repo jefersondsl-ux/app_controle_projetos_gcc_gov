@@ -12,6 +12,9 @@ def render_card(
     card_height=90
 ):
 
+    # Evita recorte do raio inferior dentro do iframe do Streamlit.
+    altura_card = max(int(card_height) - 6, 40)
+
     html = f"""
     <div style="
         background:#1E293B;
@@ -19,12 +22,13 @@ def render_card(
         border-radius:10px;
         text-align:center;
         box-shadow:0 2px 5px rgba(0,0,0,0.32);
-        height:{card_height}px;
-        min-height:{card_height}px;
+        height:{altura_card}px;
+        min-height:{altura_card}px;
         box-sizing:border-box;
         display:flex;
         flex-direction:column;
         justify-content:center;
+        overflow:hidden;
     ">
 
         <div style="
@@ -36,14 +40,6 @@ def render_card(
             gap:6px;
         ">
 
-            <span style="
-                width:8px;
-                height:8px;
-                background:{cor};
-                border-radius:50%;
-                display:inline-block;
-            "></span>
-
             {titulo}
 
         </div>
@@ -52,7 +48,7 @@ def render_card(
             font-size:{value_size};
             font-weight:700;
             color:white;
-            margin-top:4px;
+            margin-top:10px;
         ">
             {valor}
         </div>
@@ -68,4 +64,4 @@ def render_card(
     </div>
     """
 
-    components.html(html, height=card_height)
+    components.html(html, height=card_height + 8)

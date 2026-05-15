@@ -85,14 +85,49 @@ def _css_linha_total():
 
 
 def page_backlog_pendencias_tarefas():
-    st.markdown("### Pendencias do Backlog por Tarefa")
-    st.divider()
+    def _format_date(dt):
+        if pd.isna(dt):
+            return "Sem data"
+        return pd.to_datetime(dt).strftime("%d/%m/%Y")
 
+    def _format_datetime(dt):
+        if pd.isna(dt):
+            return "Sem data"
+        return pd.to_datetime(dt).strftime("%d/%m/%Y %H:%M:%S")
+
+    st.markdown("### Pendencias do Backlog por Tarefa")
+    
     df_backlog = carregar_backlog()
 
     if df_backlog.empty:
         st.warning("Base de backlog nao carregada.")
         st.stop()
+
+    ultima_atualizacao_bases = pd.NaT
+    if "DATA_REPORT" in df_backlog.columns:
+        ultima_atualizacao_bases = pd.to_datetime(df_backlog["DATA_REPORT"], errors="coerce").max()
+
+    ultima_data_backlog = pd.NaT
+    if "DATA_ENTRADA_BACKLOG" in df_backlog.columns:
+        ultima_data_backlog = pd.to_datetime(df_backlog["DATA_ENTRADA_BACKLOG"], errors="coerce").max()
+
+    st.markdown(
+        f"""
+        <div style="display:flex; justify-content:flex-end; align-items:flex-start; gap:24px; text-align:right; margin-bottom:16px;">
+            <div style="min-width:170px;">
+                <div style="font-size:12px; font-weight:700; line-height:1.0; color:#CBD5E1;">Última Atualização</div>
+                <div style="font-size:14px; line-height:1.0; margin-top:2px; color:#F8FAFC;">{_format_datetime(ultima_atualizacao_bases)}</div>
+            </div>
+            <div style="min-width:170px;">
+                <div style="font-size:12px; font-weight:700; line-height:1.0; color:#CBD5E1;">Última Entrada</div>
+                <div style="font-size:14px; line-height:1.0; margin-top:2px; color:#F8FAFC;">{_format_date(ultima_data_backlog)}</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    
+    st.divider()
 
     df_base = preparar_base_pendencias(df_backlog)
 
