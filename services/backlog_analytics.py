@@ -290,8 +290,11 @@ def matriz_backlog_por_projeto(df_backlog, df_controle, df_d_projetos=None):
         df_dim = df_d_projetos[["CARIMBO_PREFIXO", "CLIENTE"]].copy()
         df_dim["CARIMBO_PREFIXO"] = df_dim["CARIMBO_PREFIXO"].astype(str).str.strip()
         df_dim["CLIENTE_DIM"] = df_dim["CLIENTE"].apply(normalizar_cliente)
-        df_dim = df_dim.dropna(subset=["CARIMBO_PREFIXO", "CLIENTE_DIM"]).drop_duplicates("CARIMBO_PREFIXO")
-        df = df.merge(df_dim[["CARIMBO_PREFIXO", "CLIENTE_DIM"]], on="CARIMBO_PREFIXO", how="left")
+        # Somente usar cliente de d_Projetos quando existir valor válido.
+        # Não devemos sobrescrever o cliente do backlog com uma string vazia.
+        df_dim = df_dim.loc[df_dim["CLIENTE_DIM"].astype(str).str.strip() != "", ["CARIMBO_PREFIXO", "CLIENTE_DIM"]]
+        df_dim = df_dim.drop_duplicates("CARIMBO_PREFIXO")
+        df = df.merge(df_dim, on="CARIMBO_PREFIXO", how="left")
         df["CLIENTE"] = df["CLIENTE_DIM"].fillna(df["CLIENTE"])
         df = df.drop(columns=["CLIENTE_DIM"])
 
@@ -303,6 +306,7 @@ def matriz_backlog_por_projeto(df_backlog, df_controle, df_d_projetos=None):
         raise Exception("CLIENTE não encontrado")
 
     df["CLIENTE"] = df["CLIENTE"].astype(str).str.strip()
+    df["CLIENTE"] = df["CLIENTE"].replace({"": "CLIENTE NÃO INFORMADO", "NAN": "CLIENTE NÃO INFORMADO"})
 
     # =========================
     # PADRONIZAÇÃO
