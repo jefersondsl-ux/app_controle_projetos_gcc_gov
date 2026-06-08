@@ -1,23 +1,32 @@
 import pandas as pd
 import re
+import sys
 from pathlib import Path
 
 # ===============================
-# CAMINHOS DAS BASES
+# CONFIGURAÇÃO CENTRALIZADA
 # ===============================
+# Importa config.py da raiz do projeto (funciona em qualquer máquina / usuário)
 
-PATH_CONTROLE = r"C:\Users\Z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Diario_Bordo\BD_DIM\d_Controle_Projetos.xlsx"
-PATH_BACKLOG = r"C:\Users\Z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Diario_Bordo\BD_Backlog\BD_Backlog_SGP.xlsx"
-PATH_PRODUCAO = r"C:\Users\Z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Diario_Bordo\BD_Produção\BD_Produção.xlsx"
-PATH_DIARIO = r"C:\Users\Z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Diario_Bordo\BD_Diario_Bordo\f_Diario_Bordo.xlsx"
+ROOT_PROJETO = Path(__file__).resolve().parent.parent.parent  # sobe: scripts → app_gcc_gov_v3 → Projetos_GOV
+if str(ROOT_PROJETO) not in sys.path:
+    sys.path.insert(0, str(ROOT_PROJETO))
 
-OUTPUT = r"C:\Users\Z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Diario_Bordo\BD_DIM\d_Projetos.xlsx"
+from config import BASE_DIR  # detecção automática do OneDrive
+
+PATH_CONTROLE = BASE_DIR / "Diario_Bordo"    / "BD_DIM"                     / "d_Controle_Projetos.xlsx"
+PATH_BACKLOG  = BASE_DIR / "Base_Dados_SGP"  / "Bases_Processadas_Python"   / "BD_Backlog_SGP.xlsx"
+PATH_PRODUCAO = BASE_DIR / "Diario_Bordo"    / "BD_Produção"                / "BD_Produção.xlsx"
+PATH_DIARIO   = BASE_DIR / "Diario_Bordo"    / "BD_Diario_Bordo"            / "f_Diario_Bordo.xlsx"
+
+OUTPUT = BASE_DIR / "Diario_Bordo" / "BD_DIM" / "d_Projetos.xlsx"
 
 ROOT = Path(__file__).resolve().parent
 MAPPINGS_DIR = ROOT / "mappings"
 QA_REPORT_DIR = ROOT / "reports"
-IDP_OVERRIDES_PATH = MAPPINGS_DIR / "idp_overrides.csv"
-CLIENTE_OVERRIDES_PATH = MAPPINGS_DIR / "cliente_overrides.csv"
+IDP_OVERRIDES_PATH      = MAPPINGS_DIR / "idp_overrides.csv"
+CLIENTE_OVERRIDES_PATH  = MAPPINGS_DIR / "cliente_overrides.csv"
+CARIMBO_MAP_PATH        = MAPPINGS_DIR / "carimbo_to_idp.csv"   # gerado por mapear_prefixos_sem_idp.py
 
 
 # ===============================
@@ -82,18 +91,31 @@ def apply_cliente_overrides(df, overrides):
 
 
 def extrair_prefixo(idp):
+    """
+    Extrai o CARIMBO_PREFIXO de um IDP_PROJETO no formato canônico 'NNN/AA'.
+    Este formato é o mesmo que o ETL de Backlog (etl_backlog_sgp.py) produz,
+    garantindo que o JOIN entre d_Projetos e a base de Backlog funcione corretamente.
+
+    Exemplos:
+      '2024-597-01'  →  '597/24'   (IDP_PROJETO padrão SGP)
+      '597/24'       →  '597/24'   (CARIMBO_PREFIXO já no formato correto)
+      '597/24 - X'   →  '597/24'   (com texto adicional)
+      '597'          →  None       (número solto sem ano — não é possível reconstruir)
+    """
     if pd.isna(idp):
         return None
 
     texto = str(idp).strip()
 
-    # padrão 2024-597-01
-    match = re.search(r"-(\d+)-", texto)
+    # Padrão IDP_PROJETO: '2024-597-01' → '597/24'
+    match = re.search(r"(\d{4})-(\d+)-\d+", texto)
     if match:
-        return match.group(1)
+        ano_2dig = match.group(1)[-2:]   # '2024' → '24'
+        numero   = match.group(2)        # '597'
+        return f"{numero}/{ano_2dig}"    # '597/24'
 
-    # padrão 597/24
-    match = re.search(r"^(\d+)/\d+$", texto)
+    # Padrão CARIMBO_PREFIXO já no formato correto: '597/24' ou '597/24 - Nome'
+    match = re.search(r"\b(\d{1,4}/\d{2})\b", texto)
     if match:
         return match.group(1)
 
@@ -200,6 +222,68 @@ projetos = pd.concat(
     ignore_index=True
 )
 
+# ===============================
+# ENRIQUECER IDPs NULOS VIA CARIMBO_PREFIXO
+# (usa carimbo_to_idp.csv gerado por mapear_prefixos_sem_idp.py)
+# ===============================
+
+SEP = "=" * 65
+
+if CARIMBO_MAP_PATH.exists():
+    print(f"\n{SEP}")
+    print("ENRIQUECENDO IDPs NULOS VIA carimbo_to_idp.csv")
+    print(SEP)
+
+    df_cmap = pd.read_csv(CARIMBO_MAP_PATH, dtype=str).fillna("")
+    df_cmap.columns = df_cmap.columns.str.strip().str.upper()
+
+    df_cmap["CARIMBO_PREFIXO"] = df_cmap["CARIMBO_PREFIXO"].str.strip()
+    df_cmap["IDP_PROJETO"]     = df_cmap["IDP_PROJETO"].str.strip()
+    df_cmap = (
+        df_cmap
+        .query("CARIMBO_PREFIXO != '' and IDP_PROJETO != ''")
+        .drop_duplicates("CARIMBO_PREFIXO")
+    )
+
+    cmap_idp     = df_cmap.set_index("CARIMBO_PREFIXO")["IDP_PROJETO"].to_dict()
+    cmap_projeto = df_cmap.set_index("CARIMBO_PREFIXO")["PROJETO"].to_dict() if "PROJETO" in df_cmap.columns else {}
+    cmap_cliente = df_cmap.set_index("CARIMBO_PREFIXO")["CLIENTE"].to_dict() if "CLIENTE" in df_cmap.columns else {}
+
+    n_antes = projetos["IDP_PROJETO"].isna().sum()
+
+    # Máscara: linhas sem IDP mas com CARIMBO_PREFIXO
+    mask = projetos["IDP_PROJETO"].isna() & projetos["CARIMBO_PREFIXO"].notna()
+
+    # Preenche IDP_PROJETO
+    projetos.loc[mask, "IDP_PROJETO"] = (
+        projetos.loc[mask, "CARIMBO_PREFIXO"].map(cmap_idp)
+    )
+
+    # Preenche PROJETO e CLIENTE (apenas onde ainda estão nulos)
+    mask_sem_proj = mask & projetos["PROJETO"].isna()
+    mask_sem_cli  = mask & projetos["CLIENTE"].isna()
+
+    if cmap_projeto:
+        projetos.loc[mask_sem_proj, "PROJETO"] = (
+            projetos.loc[mask_sem_proj, "CARIMBO_PREFIXO"].map(cmap_projeto)
+        )
+    if cmap_cliente:
+        projetos.loc[mask_sem_cli, "CLIENTE"] = (
+            projetos.loc[mask_sem_cli, "CARIMBO_PREFIXO"].map(cmap_cliente)
+        )
+
+    n_depois     = projetos["IDP_PROJETO"].isna().sum()
+    n_recuperado = n_antes - n_depois
+    print(f"  Registros com IDP_PROJETO nulo (antes): {n_antes}")
+    print(f"  Recuperados via mapping:                {n_recuperado}")
+    print(f"  Ainda sem IDP após enriquecimento:      {n_depois}")
+    print(f"  Mappings carregados:                    {len(cmap_idp)}")
+    print(SEP)
+
+else:
+    print(f"\n[AVISO] {CARIMBO_MAP_PATH.name} não encontrado — enriquecimento ignorado.")
+    print("  Rode antes:  python scripts\\mapear_prefixos_sem_idp.py\n")
+
 projetos = projetos.dropna(subset=["IDP_PROJETO"]).copy()
 
 # Se CARIMBO_PREFIXO vier vazio, tenta extrair do IDP
@@ -263,7 +347,7 @@ df_projetos = df_projetos[
 # SALVAR
 # ===============================
 
-OUTPUT_PATH = Path(OUTPUT)
+OUTPUT_PATH = OUTPUT  # já é Path (via config.py)
 OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 QA_REPORT_DIR.mkdir(parents=True, exist_ok=True)
 

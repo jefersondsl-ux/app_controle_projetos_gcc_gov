@@ -1,20 +1,34 @@
 import streamlit as st
 import pandas as pd
 import os
+import sys
 import glob
+from pathlib import Path
+
+# ===============================
+# CONFIGURAÇÃO CENTRALIZADA
+# ===============================
+# Importa config.py da raiz do projeto (funciona em qualquer máquina / usuário)
+
+_ROOT_PROJETO = Path(__file__).resolve().parent.parent.parent  # services → app_gcc_gov_v3 → Projetos_GOV
+if str(_ROOT_PROJETO) not in sys.path:
+    sys.path.insert(0, str(_ROOT_PROJETO))
+
+from config import BASE_DIR  # detecção automática do OneDrive
 
 # --------------------------------------
 
 # Caminhos das bases
 
-PATH_DIARIO = r"C:\Users\z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Diario_Bordo\BD_Diario_Bordo\f_Diario_Bordo.xlsx"
-PATH_APONT = r"C:\Users\z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Diario_Bordo\BD_DIM\d_apontamentos.xlsx"
-PATH_CONTROLE = r"C:\Users\z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Diario_Bordo\BD_DIM\d_Controle_Projetos.xlsx"
-PATH_BACKLOG = r"C:\Users\z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Base_Dados_SGP\Bases_Processadas_Python\BD_Backlog_SGP.xlsx"
-PATH_PRODUCAO_ANALITICO = r"C:\Users\z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Base_Dados_SGP\Bases_Processadas_Python\BD_Produção_Analitica.xlsx"
-PATH_PROJETOS = r"C:\Users\z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Base_Dados_SGP\Bases_Processadas_Python\BASE_PROJETOS\d_Projetos.xlsx"
-PATH_TECNOLOGIA = r"C:\Users\z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Diario_Bordo\BD_DIM\d_tecnologia.xlsx"
-PATH_RESPONSAVEIS = r"C:\Users\z181040\OneDrive - Claro SA\BASES\Projetos_GOV\Diario_Bordo\BD_DIM\d_responsaveis.xlsx"
+PATH_DIARIO            = BASE_DIR / "Diario_Bordo" / "BD_Diario_Bordo" / "f_Diario_Bordo.xlsx"
+PATH_APONT             = BASE_DIR / "Diario_Bordo" / "BD_DIM"          / "d_apontamentos.xlsx"
+PATH_CONTROLE          = BASE_DIR / "Diario_Bordo" / "BD_DIM"          / "d_Controle_Projetos.xlsx"
+PATH_BACKLOG           = BASE_DIR / "Base_Dados_SGP" / "Bases_Processadas_Python" / "BD_Backlog_SGP.xlsx"
+PATH_PRODUCAO_ANALITICO= BASE_DIR / "Base_Dados_SGP" / "Bases_Processadas_Python" / "BD_Produção_Analitica.xlsx"
+PATH_PROJETOS          = BASE_DIR / "Diario_Bordo" / "BD_DIM"          / "d_Projetos.xlsx"
+PATH_TECNOLOGIA        = BASE_DIR / "Diario_Bordo" / "BD_DIM"          / "d_tecnologia.xlsx"
+PATH_RESPONSAVEIS      = BASE_DIR / "Diario_Bordo" / "BD_DIM"          / "d_responsaveis.xlsx"
+PATH_PRODUCAO_HISTORICO= BASE_DIR / "Base_Dados_SGP" / "Bases_Processadas_Python" / "BD_Produção_Historico.xlsx"
 
 # --------------------------------------
 
@@ -154,9 +168,9 @@ def carregar_producao(ttl=30):
         # =========================
         # VALIDAÇÃO DE ESTRUTURA
         # =========================
-        colunas_esperadas = ["CARIMBO_PREFIXO", "QTD_CIRCUITOS"]
+        colunas_obrigatorias = ["CARIMBO_PREFIXO", "QTD_CIRCUITOS"]
 
-        faltantes = [c for c in colunas_esperadas if c not in df.columns]
+        faltantes = [c for c in colunas_obrigatorias if c not in df.columns]
 
         if faltantes:
             st.error(f"Base analítica inválida. Colunas faltantes: {faltantes}")
@@ -170,6 +184,11 @@ def carregar_producao(ttl=30):
         else:
             df["QTD_ESTRATEGIA_SIM"] = pd.to_numeric(
                 df["QTD_ESTRATEGIA_SIM"], errors="coerce"
+            ).fillna(0).astype(int)
+
+        if "QTD_CIRCUITOS_TOTAL" in df.columns:
+            df["QTD_CIRCUITOS_TOTAL"] = pd.to_numeric(
+                df["QTD_CIRCUITOS_TOTAL"], errors="coerce"
             ).fillna(0).astype(int)
 
         df["QTD_CIRCUITOS"] = pd.to_numeric(
@@ -238,14 +257,8 @@ def carregar_tecnologia(ttl=30):
 def carregar_meta_mensal(ttl=30):
     """Carrega a meta mensal mais recente de backlog"""
     try:
-        onedrive_path = os.environ.get("OneDriveCommercial") or os.environ.get("OneDrive")
-        if not onedrive_path:
-            st.warning("OneDrive não configurado")
-            return pd.DataFrame()
-        
-        output_dir = os.path.join(
-            onedrive_path,
-            'BASES/Projetos_GOV/Base_Dados_SGP/Bases_Processadas_Python/Backlog_Meta_Mensal'
+        output_dir = str(
+            BASE_DIR / "Base_Dados_SGP" / "Bases_Processadas_Python" / "Backlog_Meta_Mensal"
         )
         
         if not os.path.exists(output_dir):
@@ -268,5 +281,63 @@ def carregar_meta_mensal(ttl=30):
     except Exception as e:
         st.error(f"Erro ao carregar meta mensal: {e}")
         return pd.DataFrame()
-    
+
+# --------------------------------------
+
+@st.cache_data
+def carregar_receita_historica(ttl=30):
+    """
+    Carrega BD_Produção_Historico.xlsx e agrega DELTA_RECEITA por IDP_PROJETO.
+
+    Retorna um DataFrame com colunas [IDP_PROJETO, Receita_Historico] representando
+    a receita de produção acumulada histórica — usado para substituir RECEITA_TOTAL
+    da BD_Produção_Analitica.xlsx, que reflete apenas o período corrente.
+
+    Aplica enriquecimento via CARIMBO_PREFIXO → d_Projetos para recuperar registros
+    com IDP_PROJETO nulo (mesma lógica da tabela analítica principal).
+    """
+    try:
+        df = pd.read_excel(PATH_PRODUCAO_HISTORICO)
+        df.columns = df.columns.str.strip().str.upper()
+
+        colunas_necessarias = ["IDP_PROJETO", "DELTA_RECEITA"]
+        faltantes = [c for c in colunas_necessarias if c not in df.columns]
+        if faltantes:
+            st.warning(f"BD_Produção_Historico sem colunas: {faltantes}")
+            return pd.DataFrame()
+
+        df["DELTA_RECEITA"] = pd.to_numeric(df["DELTA_RECEITA"], errors="coerce").fillna(0)
+
+        # ── Enriquecimento via CARIMBO_PREFIXO ──────────────────────────────
+        # Registros com IDP_PROJETO nulo recebem o IDP a partir de d_Projetos,
+        # usando CARIMBO_PREFIXO como chave — evita perder receita dessas linhas.
+        if "CARIMBO_PREFIXO" in df.columns:
+            try:
+                d_proj = pd.read_excel(PATH_PROJETOS)
+                d_proj.columns = d_proj.columns.str.strip().str.upper()
+
+                from services.reconciliar_chaves import enriquecer_com_d_projetos
+                df = enriquecer_com_d_projetos(
+                    df, d_proj,
+                    chave_em_fato="CARIMBO_PREFIXO",
+                    chave_em_dim="CARIMBO_PREFIXO"
+                )
+            except Exception:
+                pass  # se falhar, continua sem enriquecimento
+
+        # ── Normalizar IDP e excluir registros sem chave ────────────────────
+        df["IDP_PROJETO"] = df["IDP_PROJETO"].astype(str).str.strip()
+        df = df[~df["IDP_PROJETO"].isin(["nan", "None", ""])]
+
+        receita_hist = (
+            df.groupby("IDP_PROJETO", as_index=False)
+            .agg(Receita_Historico=("DELTA_RECEITA", "sum"))
+        )
+
+        return receita_hist
+
+    except Exception as e:
+        st.error(f"Erro ao carregar receita histórica: {e}")
+        return pd.DataFrame()
+
 # --------------------------------------

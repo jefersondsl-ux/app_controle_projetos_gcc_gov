@@ -80,8 +80,8 @@ Campos: Apontamento_SK, Apontamentos_Padrao, Status_Macro, Macro_Ordem
 **Realidade:**
 ```python
 # carregar_bases.py - HOJE
-PATH_DIARIO = r"C:\Users\z181040\OneDrive - Claro SA\BASES\..."
-PATH_BACKLOG = r"C:\Users\z181040\OneDrive - Claro SA\BASES\..."
+PATH_DIARIO = r"C:\Users\f282465\OneDrive - Claro SA\BASES\..."
+PATH_BACKLOG = r"C:\Users\f282465\OneDrive - Claro SA\BASES\..."
 # ❌ Hardcoded!
 ```
 

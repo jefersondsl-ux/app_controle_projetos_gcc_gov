@@ -3,7 +3,7 @@ Nota Versão 3 - app_gcc_gov_v3
 1) Objetivo
 - Criar uma nova versão do app_gcc_gov_v2 como versão 3.
 - Replicar o projeto atual em:
-  C:\Users\Z181040\OneDrive - Claro SA\BASES\Projetos_GOV\app_gcc_gov_v3
+  C:\Users\f282465\OneDrive - Claro SA\BASES\Projetos_GOV\app_gcc_gov_v3
 - Ajustar o app para remover as páginas:
   - pages/cadastro_projeto.py
   - pages/atualizar_diario.py
@@ -12,7 +12,7 @@ Nota Versão 3 - app_gcc_gov_v3
 
 2) Onde está o novo projeto
 - Nova pasta criada em OneDrive:
-  C:\Users\Z181040\OneDrive - Claro SA\BASES\Projetos_GOV\app_gcc_gov_v3
+  C:\Users\f282465\OneDrive - Claro SA\BASES\Projetos_GOV\app_gcc_gov_v3
 
 3) O que será ajustado
 - App principal: app.py
@@ -23,7 +23,7 @@ Nota Versão 3 - app_gcc_gov_v3
 4) Como rodar a versão 3 em desenvolvimento
 A) Abrir o terminal na pasta:
 ```powershell
-cd "C:\Users\Z181040\OneDrive - Claro SA\BASES\Projetos_GOV\app_gcc_gov_v3"
+cd "C:\Users\f282465\OneDrive - Claro SA\BASES\Projetos_GOV\app_gcc_gov_v3"
 ```
 B) Ativar ambiente virtual separado (ver nota de ambiente virtual)
 C) Instalar dependências:

@@ -12,7 +12,7 @@ BUILD_D_PROJETOS_SCRIPT = ROOT_DIR / "scripts" / "build_d_projetos.py"
 AUDITORIA_SCRIPT = ROOT_DIR.parent / "auditoria_integridade_projetos.py"
 
 # Paths de output/artefatos
-ONE_DRIVE_BASE = Path(r"C:\Users\Z181040\OneDrive - Claro SA")
+ONE_DRIVE_BASE = Path(r"C:\Users\f282465\OneDrive - Claro SA")
 RAW_BACKLOG_DIR = ONE_DRIVE_BASE / "BASES" / "Projetos_GOV" / "Base_Dados_SGP" / "Bases_Originais"
 RAW_PRODUCAO_DIR = ONE_DRIVE_BASE / "BASES" / "Projetos_GOV" / "Base_Dados_SGP" / "Bases_Originais"
 RAW_CONTROLE_PATH = ONE_DRIVE_BASE / "BASES" / "Projetos_GOV" / "GCC GOVERNO - Acompanhamento de Projetos" / "Base de dados e controle" / "Controle_Projetos.xlsx"

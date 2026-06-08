@@ -75,63 +75,74 @@ def render_header(kpis, mostrar_cards=True):
     perc_parcial = round((kpis["projetos_parcial"] / total) * 100, 1) if total else 0
     perc_concluido = round((kpis["projetos_concluido"] / total) * 100, 1) if total else 0
 
+    
+    cards_html = ""
+
+    if mostrar_cards:
+        cards_html = f"""
+        <div style="
+            display: flex;
+            gap: 12px;
+            align-items: stretch;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        ">
+            {card_html("Total Projetos", kpis["total_projetos"], "#60A5FA")}
+            {card_html("Novo", kpis["projetos_novos"], "#64748B", f"{perc_novos}%")}
+            {card_html("Em Andamento", kpis["projetos_parcial"], "#FACC15", f"{perc_parcial}%")}
+            {card_html("Concluído", kpis["projetos_concluido"], "#22C55E", f"{perc_concluido}%")}
+            {card_html("Projetos Parados", kpis["projetos_parados"], "#EF4444", "+30 dias") if mostrar_card_parados else ""}
+            {card_html("Atualização", kpis["ultima_atualizacao"], "#38BDF8")}
+        </div>
+        """
+
+
     html = f"""
     <div style="
-        width:100%;
-        background-color:#262730;
-        padding:25px 18px 14px 18px;
-        border-radius:12px;
-        margin-bottom:20px;
-        box-sizing:border-box;
-        font-family:Segoe UI, Arial, sans-serif;
+        width: 100%;
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        border-radius: 18px;
+        padding: 18px 22px;
+        box-sizing: border-box;
+        border: 1px solid #e5e7eb;
+        font-family: Arial, sans-serif;
     ">
         <div style="
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            gap:16px;
-            flex-wrap:wrap;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
         ">
-
-            <!-- LOGO + TITULO -->
             <div style="
-                display:flex;
-                align-items:center;
-                gap:12px;
-                min-width:280px;
+                display: flex;
+                align-items: center;
+                gap: 14px;
             ">
-                <img src="data:image/png;base64,{logo_base64}" width="36">
+                data:image/png;base64,{'''logo_base64'''}
 
-                <div style="
-                    font-size:22px;
-                    font-weight:700;
-                    color:white;
-                    white-space:nowrap;
-                ">
-                    Controle de Projetos GCC GOV
+                <div>
+                    <div style="
+                        font-size: 24px;
+                        font-weight: 800;
+                        color: #0f172a;
+                        line-height: 1.1;
+                    ">
+                        Controle de Projetos GCC GOV
+                    </div>
+
+                    <div style="
+                        font-size: 13px;
+                        color: #64748b;
+                        margin-top: 4px;
+                    ">
+                        Painel de acompanhamento gerencial e operacional
+                    </div>
                 </div>
             </div>
-
-            {f"""
-            <div style="
-                display:flex;
-                gap:10px;
-                flex-wrap:wrap;
-                justify-content:flex-end;
-                align-items:stretch;
-                flex:1;
-            ">
-                {card_html("Total Projetos", kpis["total_projetos"], "#60A5FA")}
-                {card_html("Novo", kpis["projetos_novos"], "#64748B", f"{perc_novos}%")}
-                {card_html("Em Andamento", kpis["projetos_parcial"], "#FACC15", f"{perc_parcial}%")}
-                {card_html("Concluído", kpis["projetos_concluido"], "#22C55E", f"{perc_concluido}%")}
-                {card_html("Projetos Parados", kpis["projetos_parados"], "#EF4444", "+30 dias") if mostrar_card_parados else ""}
-                {card_html("Atualização", kpis["ultima_atualizacao"], "#38BDF8")}
-            </div>
-            """ if mostrar_cards else ""}
-
         </div>
+
+        {cards_html}
     </div>
     """
-
-    components.html(html, height=140)
+    altura = 245 if mostrar_cards else 105
+    components.html(html, height=altura)

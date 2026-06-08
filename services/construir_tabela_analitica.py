@@ -9,7 +9,8 @@ def construir_tabela_analitica(
     df_controle,
     df_backlog,
     df_producao,
-    df_diario
+    df_diario,
+    df_receita_historica=None
 ):
 
     # =============================
@@ -103,6 +104,7 @@ def construir_tabela_analitica(
     producao_proj = df_producao.rename(
         columns={
             "QTD_CIRCUITOS": "Circuitos_Producao",
+            "QTD_CIRCUITOS_TOTAL": "Circuitos_Producao_Total",
             "RECEITA_TOTAL": "Receita_Producao"
         }
     ).copy()
@@ -115,6 +117,8 @@ def construir_tabela_analitica(
         agg_cols = {}
         if "Circuitos_Producao" in producao_proj.columns:
             agg_cols["Circuitos_Producao"] = "sum"
+        if "Circuitos_Producao_Total" in producao_proj.columns:
+            agg_cols["Circuitos_Producao_Total"] = "sum"
         if "Receita_Producao" in producao_proj.columns:
             agg_cols["Receita_Producao"] = "sum"
 
@@ -124,6 +128,30 @@ def construir_tabela_analitica(
                 .groupby("IDP_PROJETO", as_index=False)
                 .agg(agg_cols)
             )
+
+    # =============================
+    # RECEITA HISTÓRICA ACUMULADA
+    # =============================
+    # Substitui Receita_Producao (que reflete só o período atual da Analítica)
+    # pelo DELTA_RECEITA acumulado de toda a série histórica em BD_Produção_Historico.xlsx
+
+    if df_receita_historica is not None and not df_receita_historica.empty:
+        df_receita_historica = df_receita_historica.copy()
+        df_receita_historica["IDP_PROJETO"] = (
+            df_receita_historica["IDP_PROJETO"].astype(str).str.strip()
+        )
+        producao_proj = producao_proj.merge(
+            df_receita_historica[["IDP_PROJETO", "Receita_Historico"]],
+            on="IDP_PROJETO",
+            how="left"
+        )
+        # sobrescreve Receita_Producao; fallback para o valor original se histórico for nulo
+        if "Receita_Producao" in producao_proj.columns:
+            producao_proj["Receita_Producao"] = (
+                producao_proj["Receita_Historico"]
+                .fillna(producao_proj["Receita_Producao"])
+            )
+        producao_proj = producao_proj.drop(columns=["Receita_Historico"], errors="ignore")
 
     # =============================
     # DIÁRIO POR PROJETO
@@ -285,6 +313,7 @@ def construir_tabela_analitica(
 
         # PRODUÇÃO
         "Circuitos_Producao",
+        "Circuitos_Producao_Total",
         "Receita_Producao"        
     ]
 
@@ -297,9 +326,16 @@ def construir_tabela_analitica(
     # TOTAIS
     # =============================
 
+    if "Circuitos_Producao_Total" in df.columns:
+        producao_total = df["Circuitos_Producao_Total"]
+    elif "Circuitos_Producao" in df.columns:
+        producao_total = df["Circuitos_Producao"]
+    else:
+        producao_total = pd.Series(0, index=df.index)
+
     df["Total_Circuitos"] = (
         df.get("BACKLOG_TOTAL", 0) +
-        df.get("Circuitos_Producao", 0)
+        producao_total
     )
 
     df["Receita_Total"] = (
@@ -312,7 +348,7 @@ def construir_tabela_analitica(
     # =============================
 
     df["Perc_Conclusao"] = ( 
-        df["Circuitos_Producao"]
+        producao_total
         .div(df["Total_Circuitos"])
         .replace([float("inf"), -float("inf")], 0)
         .fillna(0)
@@ -363,6 +399,7 @@ def construir_tabela_analitica(
 
         # PRODUÇÃO
         "Circuitos_Producao",
+        "Circuitos_Producao_Total",
         "Receita_Producao",
 
         # TOTAIS
@@ -483,6 +520,7 @@ def construir_tabela_analitica(
 
         # PRODUÇÃO / EXISTENTE
         "Circuitos_Producao",
+        "Circuitos_Producao_Total",
         "Total_Circuitos",
         "Apontamentos",
         "Etapas_Concluidas",

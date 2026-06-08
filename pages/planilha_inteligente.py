@@ -17,7 +17,8 @@ from services.carregar_bases import (
     carregar_producao,
     carregar_controle,
     carregar_diario,
-    carregar_projetos
+    carregar_projetos,
+    carregar_receita_historica
 )
 
 from services.construir_tabela_analitica import construir_tabela_analitica
@@ -30,11 +31,12 @@ def page_planilha_inteligente():
     # CARREGAR BASES
     # =============================
 
-    df_backlog = carregar_backlog()
-    df_producao = carregar_producao()
-    df_controle = carregar_controle()
-    df_diario = carregar_diario()  
-    df_d_projetos = carregar_projetos()  
+    df_backlog           = carregar_backlog()
+    df_producao          = carregar_producao()
+    df_controle          = carregar_controle()
+    df_diario            = carregar_diario()
+    df_d_projetos        = carregar_projetos()
+    df_receita_historica = carregar_receita_historica()
 
     # =============================
     # CONSTRUIR TABELA ANALÍTICA
@@ -45,7 +47,8 @@ def page_planilha_inteligente():
         df_controle,
         df_backlog,
         df_producao,
-        df_diario
+        df_diario,
+        df_receita_historica=df_receita_historica
     )
 
     # =============================
@@ -56,7 +59,11 @@ def page_planilha_inteligente():
     # BACKLOG_TOTAL, BACKLOG_GROSS, BACKLOG_SERVICOS, BACKLOG_PJE,
     # BACKLOG_CLIENTE, BACKLOG_COMERCIAL, RECEITA_BACKLOG
 
-    # Nenhuma renomeação é aplicada nesta etapa.
+    # Ajustar apenas nomes de exibição para produção no relatório.
+    df = df.rename(columns={
+        "Circuitos_Producao": "Produção Mês Atual",
+        "Circuitos_Producao_Total": "Produção Total"
+    })
 
     def _format_date(dt):
         if pd.isna(dt):
@@ -169,7 +176,8 @@ def page_planilha_inteligente():
     ]
 
     cols_producao = [
-        "Circuitos_Producao",
+        "Produção Mês Atual",
+        "Produção Total",
         "Receita_Producao"
     ]
 

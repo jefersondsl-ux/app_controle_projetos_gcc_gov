@@ -50,7 +50,7 @@ Rode o app e verifique o terminal. Você verá mensagens como:
 Execute o script de build:
 
 ```powershell
-cd "c:\Users\Z181040\OneDrive - Claro SA\BASES\Projetos_GOV\app_gcc_gov_v3\scripts"
+cd "c:\Users\f282465\OneDrive - Claro SA\BASES\Projetos_GOV\app_gcc_gov_v3\scripts"
 python build_d_projetos.py
 ```
 
