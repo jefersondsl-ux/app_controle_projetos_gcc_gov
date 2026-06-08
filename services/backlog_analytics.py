@@ -510,6 +510,7 @@ def matriz_backlog_por_projeto(df_backlog, df_controle, df_d_projetos=None):
             SERVICO=("FLAG_SERVICO", "sum"),
             REGRA_COMERCIAL_SERVICO=("REGRA_COMERCIAL_SERVICO", "sum"),
             RECEITA_SERVICO=("RECEITA_SERVICO", "sum"),
+            REGRA_COMERCIAL_OUTROS=("REGRA_COMERCIAL_OUTROS", "sum"),
 
             # produto
             INTERNET=("FLAG_INTERNET", "sum"),

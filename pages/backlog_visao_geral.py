@@ -432,20 +432,27 @@ def page_backlog_visao_geral():
 
         mapa_renomeio = {
             "TOTAL": "TOTAL",
+            "REGRA_COMERCIAL_TOTAL": "Regra Comercial\nTotal",
             "GROSS": "GROSS",
+            "REGRA_COMERCIAL_GROSS": "Regra Comercial\nGross",
             "RECEITA_GROSS": "Receita\nGross",
             "SERVICO": "SERVIÇO",
+            "REGRA_COMERCIAL_SERVICO": "Regra Comercial\nServiço",
             "RECEITA_SERVICO": "Receita\nServiço",
-            "RECEITA": "Receita",
             "OUTROS": "OUTROS",
+            "REGRA_COMERCIAL_OUTROS": "Regra Comercial\nOutros",
             "RECEITA_OUTROS": "Receita\nOutros",
             "INTERNET": "INTERNET",
+            "REGRA_COMERCIAL_INTERNET": "Regra Comercial\nInternet",
             "RECEITA_INTERNET": "Receita\nInternet",
             "DADOS": "DADOS",
+            "REGRA_COMERCIAL_DADOS": "Regra Comercial\nDados",
             "RECEITA_DADOS": "Receita\nDados",
             "VOZ": "VOZ",
+            "REGRA_COMERCIAL_VOZ": "Regra Comercial\nVoz",
             "RECEITA_VOZ": "Receita\nVoz",
             "WIFI": "WIFI",
+            "REGRA_COMERCIAL_WIFI": "Regra Comercial\nWiFi",
             "RECEITA_WIFI": "Receita\nWiFi",
             "DELTA_RECEITA_GERAL": "Receita\nGeral",
             "ESTRATEGIA": "Estratégia\nde Redes",
@@ -763,10 +770,10 @@ def page_backlog_visao_geral():
         # ==============================
 
         colunas_backlog = [
-            "TOTAL", "GROSS", "Receita\nGross", "SERVIÇO", "Receita\nServiço",
-            "OUTROS", "Receita\nOutros",
-            "INTERNET", "Receita\nInternet", "DADOS", "Receita\nDados",
-            "VOZ", "Receita\nVoz", "WIFI", "Receita\nWiFi", "Receita\nGeral"
+            "TOTAL", "Regra Comercial\nTotal", "GROSS", "Regra Comercial\nGross", "Receita\nGross", "SERVIÇO", "Regra Comercial\nServiço", "Receita\nServiço",
+            "OUTROS", "Regra Comercial\nOutros", "Receita\nOutros",
+            "INTERNET", "Regra Comercial\nInternet", "Receita\nInternet", "DADOS", "Regra Comercial\nDados", "Receita\nDados",
+            "VOZ", "Regra Comercial\nVoz", "Receita\nVoz", "WIFI", "Regra Comercial\nWiFi", "Receita\nWiFi", "Receita\nGeral"
         ]
 
         colunas_backlog_atual = [
