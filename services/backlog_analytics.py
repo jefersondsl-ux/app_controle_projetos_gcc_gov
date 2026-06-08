@@ -474,6 +474,16 @@ def matriz_backlog_por_projeto(df_backlog, df_controle, df_d_projetos=None):
     df["BACKLOG_REGRA_COMERCIAL"] = df["REGRA_COMERCIAL_PY"] * df["FLAG_BACKLOG_ATUAL_EST"]
     df["BACKLOG_DELTA_RECEITA"] = df["DELTA_RECEITA"] * df["FLAG_BACKLOG_ATUAL_EST"]
 
+    # Soma da regra comercial para categorias relevantes
+    df["REGRA_COMERCIAL_TOTAL"] = df["REGRA_COMERCIAL_PY"]
+    df["REGRA_COMERCIAL_GROSS"] = df["REGRA_COMERCIAL_PY"] * df["FLAG_GROSS"]
+    df["REGRA_COMERCIAL_SERVICO"] = df["REGRA_COMERCIAL_PY"] * df["FLAG_SERVICO"]
+    df["REGRA_COMERCIAL_OUTROS"] = df["REGRA_COMERCIAL_PY"] * (~(df["FLAG_GROSS"] | df["FLAG_SERVICO"]))
+    df["REGRA_COMERCIAL_INTERNET"] = df["REGRA_COMERCIAL_PY"] * df["FLAG_INTERNET"]
+    df["REGRA_COMERCIAL_DADOS"] = df["REGRA_COMERCIAL_PY"] * df["FLAG_DADOS"]
+    df["REGRA_COMERCIAL_VOZ"] = df["REGRA_COMERCIAL_PY"] * df["FLAG_VOZ"]
+    df["REGRA_COMERCIAL_WIFI"] = df["REGRA_COMERCIAL_PY"] * df["FLAG_WIFI"]
+
     # Receita segmentada por classificação e por produto
     df["RECEITA_GROSS"] = df["DELTA_RECEITA"] * df["FLAG_GROSS"]
     df["RECEITA_SERVICO"] = df["DELTA_RECEITA"] * df["FLAG_SERVICO"]
@@ -491,21 +501,28 @@ def matriz_backlog_por_projeto(df_backlog, df_controle, df_d_projetos=None):
         .groupby("CLIENTE", as_index=False)
         .agg(
             TOTAL=("CLIENTE", "count"),
+            REGRA_COMERCIAL_TOTAL=("REGRA_COMERCIAL_TOTAL", "sum"),
 
             # classificação
             GROSS=("FLAG_GROSS", "sum"),
+            REGRA_COMERCIAL_GROSS=("REGRA_COMERCIAL_GROSS", "sum"),
             RECEITA_GROSS=("RECEITA_GROSS", "sum"),
             SERVICO=("FLAG_SERVICO", "sum"),
+            REGRA_COMERCIAL_SERVICO=("REGRA_COMERCIAL_SERVICO", "sum"),
             RECEITA_SERVICO=("RECEITA_SERVICO", "sum"),
 
             # produto
             INTERNET=("FLAG_INTERNET", "sum"),
+            REGRA_COMERCIAL_INTERNET=("REGRA_COMERCIAL_INTERNET", "sum"),
             RECEITA_INTERNET=("RECEITA_INTERNET", "sum"),
             DADOS=("FLAG_DADOS", "sum"),
+            REGRA_COMERCIAL_DADOS=("REGRA_COMERCIAL_DADOS", "sum"),
             RECEITA_DADOS=("RECEITA_DADOS", "sum"),
             VOZ=("FLAG_VOZ", "sum"),
+            REGRA_COMERCIAL_VOZ=("REGRA_COMERCIAL_VOZ", "sum"),
             RECEITA_VOZ=("RECEITA_VOZ", "sum"),
             WIFI=("FLAG_WIFI", "sum"),
+            REGRA_COMERCIAL_WIFI=("REGRA_COMERCIAL_WIFI", "sum"),
             RECEITA_WIFI=("RECEITA_WIFI", "sum"),
 
             # estratégia

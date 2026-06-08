@@ -344,22 +344,30 @@ def page_backlog_visao_geral():
         colunas_ordem = [
             "CLIENTE",
             "TOTAL",
+            "REGRA_COMERCIAL_TOTAL",
             "PRODUCAO_CIRCUITOS",
             "RECEITA",
 
             "GROSS",
+            "REGRA_COMERCIAL_GROSS",
             "RECEITA_GROSS",
             "SERVICO",
+            "REGRA_COMERCIAL_SERVICO",
             "RECEITA_SERVICO",
             "OUTROS",
+            "REGRA_COMERCIAL_OUTROS",
             "RECEITA_OUTROS",
             "INTERNET",
+            "REGRA_COMERCIAL_INTERNET",
             "RECEITA_INTERNET",
             "DADOS",
+            "REGRA_COMERCIAL_DADOS",
             "RECEITA_DADOS",
             "VOZ",
+            "REGRA_COMERCIAL_VOZ",
             "RECEITA_VOZ",
             "WIFI",
+            "REGRA_COMERCIAL_WIFI",
             "RECEITA_WIFI",
             "DELTA_RECEITA_GERAL",
 
@@ -484,19 +492,27 @@ def page_backlog_visao_geral():
 
         colunas_numericas = [
             "TOTAL",
+            "Regra Comercial\nTotal",
             "GROSS",
+            "Regra Comercial\nGross",
             "Receita\nGross",
             "SERVIÇO",
+            "Regra Comercial\nServiço",
             "Receita\nServiço",
             "OUTROS",
+            "Regra Comercial\nOutros",
             "Receita\nOutros",
             "INTERNET",
+            "Regra Comercial\nInternet",
             "Receita\nInternet",
             "DADOS",
+            "Regra Comercial\nDados",
             "Receita\nDados",
             "VOZ",
+            "Regra Comercial\nVoz",
             "Receita\nVoz",
             "WIFI",
+            "Regra Comercial\nWiFi",
             "Receita\nWiFi",
             "Receita\nGeral",
             "Estratégia\nde Redes",
@@ -613,6 +629,22 @@ def page_backlog_visao_geral():
             df_grid["Receita\nForecast"] = df_grid["Receita\nForecast"].fillna(0).apply(formatar_moeda)
         if "Receita" in df_grid.columns:
             df_grid["Receita"] = df_grid["Receita"].fillna(0).apply(formatar_moeda)
+        if "Regra Comercial\nTotal" in df_grid.columns:
+            df_grid["Regra Comercial\nTotal"] = df_grid["Regra Comercial\nTotal"].fillna(0)
+        if "Regra Comercial\nGross" in df_grid.columns:
+            df_grid["Regra Comercial\nGross"] = df_grid["Regra Comercial\nGross"].fillna(0)
+        if "Regra Comercial\nServiço" in df_grid.columns:
+            df_grid["Regra Comercial\nServiço"] = df_grid["Regra Comercial\nServiço"].fillna(0)
+        if "Regra Comercial\nOutros" in df_grid.columns:
+            df_grid["Regra Comercial\nOutros"] = df_grid["Regra Comercial\nOutros"].fillna(0)
+        if "Regra Comercial\nInternet" in df_grid.columns:
+            df_grid["Regra Comercial\nInternet"] = df_grid["Regra Comercial\nInternet"].fillna(0)
+        if "Regra Comercial\nDados" in df_grid.columns:
+            df_grid["Regra Comercial\nDados"] = df_grid["Regra Comercial\nDados"].fillna(0)
+        if "Regra Comercial\nVoz" in df_grid.columns:
+            df_grid["Regra Comercial\nVoz"] = df_grid["Regra Comercial\nVoz"].fillna(0)
+        if "Regra Comercial\nWiFi" in df_grid.columns:
+            df_grid["Regra Comercial\nWiFi"] = df_grid["Regra Comercial\nWiFi"].fillna(0)
         if "Backlog\nAtual\n(Qtd)" in df_grid.columns:
             df_grid["Backlog\nAtual\n(Qtd)"] = df_grid["Backlog\nAtual\n(Qtd)"].fillna(0).astype(int)
         if "Regra\nComercial\nBacklog" in df_grid.columns:
