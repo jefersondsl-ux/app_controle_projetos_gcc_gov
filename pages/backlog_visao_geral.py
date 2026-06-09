@@ -345,8 +345,8 @@ def page_backlog_visao_geral():
             "CLIENTE",
             "TOTAL",
             "REGRA_COMERCIAL_TOTAL",
-            "PRODUCAO_CIRCUITOS",
             "RECEITA",
+            "PRODUCAO_CIRCUITOS",
 
             "GROSS",
             "REGRA_COMERCIAL_GROSS",
@@ -1134,6 +1134,7 @@ def page_backlog_visao_geral():
         if "columnDefs" in grid_options_geral:
             original_defs_geral = grid_options_geral["columnDefs"]
             total_backlog_children = []
+            production_children = []
             grupos_hierarquicos = {
                 "GROSS": [],
                 "SERVIÇO": [],
@@ -1153,14 +1154,34 @@ def page_backlog_visao_geral():
                     child["headerName"] = "Qtd"
                     child["headerClass"] = "header-total-backlog-child"
                     total_backlog_children.append(child)
+                elif field == "Regra Comercial\nTotal":
+                    child = col_def.copy()
+                    child["headerName"] = "Regra"
+                    child["headerClass"] = "header-total-backlog-child"
+                    total_backlog_children.append(child)
                 elif field == "Receita\nGeral":
                     child = col_def.copy()
                     child["headerName"] = "Receita"
                     child["headerClass"] = "header-total-backlog-child"
                     total_backlog_children.append(child)
+                elif field == "PRODUCAO_CIRCUITOS":
+                    child = col_def.copy()
+                    child["headerName"] = "Qtd"
+                    child["headerClass"] = "header-producao-child"
+                    production_children.append(child)
+                elif field == "RECEITA":
+                    child = col_def.copy()
+                    child["headerName"] = "Receita"
+                    child["headerClass"] = "header-producao-child"
+                    production_children.append(child)
                 elif field == "GROSS":
                     child = col_def.copy()
                     child["headerName"] = "Qtd"
+                    child["headerClass"] = "header-gross-child"
+                    grupos_hierarquicos["GROSS"].append(child)
+                elif field == "Regra Comercial\nGross":
+                    child = col_def.copy()
+                    child["headerName"] = "Regra"
                     child["headerClass"] = "header-gross-child"
                     grupos_hierarquicos["GROSS"].append(child)
                 elif field == "Receita\nGross":
@@ -1173,6 +1194,11 @@ def page_backlog_visao_geral():
                     child["headerName"] = "Qtd"
                     child["headerClass"] = "header-servico-child"
                     grupos_hierarquicos["SERVIÇO"].append(child)
+                elif field == "Regra Comercial\nServiço":
+                    child = col_def.copy()
+                    child["headerName"] = "Regra"
+                    child["headerClass"] = "header-servico-child"
+                    grupos_hierarquicos["SERVIÇO"].append(child)
                 elif field == "Receita\nServiço":
                     child = col_def.copy()
                     child["headerName"] = "Receita"
@@ -1181,6 +1207,11 @@ def page_backlog_visao_geral():
                 elif field == "OUTROS":
                     child = col_def.copy()
                     child["headerName"] = "Qtd"
+                    child["headerClass"] = "header-outros-child"
+                    grupos_hierarquicos["OUTROS"].append(child)
+                elif field == "Regra Comercial\nOutros":
+                    child = col_def.copy()
+                    child["headerName"] = "Regra"
                     child["headerClass"] = "header-outros-child"
                     grupos_hierarquicos["OUTROS"].append(child)
                 elif field == "Receita\nOutros":
@@ -1193,6 +1224,11 @@ def page_backlog_visao_geral():
                     child["headerName"] = "Qtd"
                     child["headerClass"] = "header-internet-child"
                     grupos_hierarquicos["INTERNET"].append(child)
+                elif field == "Regra Comercial\nInternet":
+                    child = col_def.copy()
+                    child["headerName"] = "Regra"
+                    child["headerClass"] = "header-internet-child"
+                    grupos_hierarquicos["INTERNET"].append(child)
                 elif field == "Receita\nInternet":
                     child = col_def.copy()
                     child["headerName"] = "Receita"
@@ -1201,6 +1237,11 @@ def page_backlog_visao_geral():
                 elif field == "DADOS":
                     child = col_def.copy()
                     child["headerName"] = "Qtd"
+                    child["headerClass"] = "header-dados-child"
+                    grupos_hierarquicos["DADOS"].append(child)
+                elif field == "Regra Comercial\nDados":
+                    child = col_def.copy()
+                    child["headerName"] = "Regra"
                     child["headerClass"] = "header-dados-child"
                     grupos_hierarquicos["DADOS"].append(child)
                 elif field == "Receita\nDados":
@@ -1213,6 +1254,11 @@ def page_backlog_visao_geral():
                     child["headerName"] = "Qtd"
                     child["headerClass"] = "header-voz-child"
                     grupos_hierarquicos["VOZ"].append(child)
+                elif field == "Regra Comercial\nVoz":
+                    child = col_def.copy()
+                    child["headerName"] = "Regra"
+                    child["headerClass"] = "header-voz-child"
+                    grupos_hierarquicos["VOZ"].append(child)
                 elif field == "Receita\nVoz":
                     child = col_def.copy()
                     child["headerName"] = "Receita"
@@ -1221,6 +1267,11 @@ def page_backlog_visao_geral():
                 elif field == "WIFI":
                     child = col_def.copy()
                     child["headerName"] = "Qtd"
+                    child["headerClass"] = "header-wifi-child"
+                    grupos_hierarquicos["WIFI"].append(child)
+                elif field == "Regra Comercial\nWiFi":
+                    child = col_def.copy()
+                    child["headerName"] = "Regra"
                     child["headerClass"] = "header-wifi-child"
                     grupos_hierarquicos["WIFI"].append(child)
                 elif field == "Receita\nWiFi":
@@ -1238,6 +1289,14 @@ def page_backlog_visao_geral():
                         "headerName": "Total Backlog",
                         "headerClass": "header-total-backlog-group",
                         "children": total_backlog_children
+                    }
+                )
+            if production_children:
+                new_defs_geral.append(
+                    {
+                        "headerName": "Produção",
+                        "headerClass": "header-producao-group",
+                        "children": production_children
                     }
                 )
             for grupo in ["GROSS", "SERVIÇO", "OUTROS", "INTERNET", "DADOS", "VOZ", "WIFI"]:
@@ -1429,21 +1488,29 @@ def page_backlog_visao_geral():
                 c for c in [
                     "CLIENTE",
                     "TOTAL",
+                    "Regra Comercial\nTotal",
                     "Produção\nQtd",
                     "Receita",
                     "GROSS",
+                    "Regra Comercial\nGross",
                     "Receita\nGross",
                     "SERVIÇO",
+                    "Regra Comercial\nServiço",
                     "Receita\nServiço",
                     "OUTROS",
+                    "Regra Comercial\nOutros",
                     "Receita\nOutros",
                     "INTERNET",
+                    "Regra Comercial\nInternet",
                     "Receita\nInternet",
                     "DADOS",
+                    "Regra Comercial\nDados",
                     "Receita\nDados",
                     "VOZ",
+                    "Regra Comercial\nVoz",
                     "Receita\nVoz",
                     "WIFI",
+                    "Regra Comercial\nWiFi",
                     "Receita\nWiFi",
                     "Receita\nGeral",
                     "IS_TOTAL"
