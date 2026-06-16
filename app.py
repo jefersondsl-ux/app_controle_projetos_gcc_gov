@@ -214,7 +214,6 @@ if menu in PAGINAS:
 #===========================================================
 ## FIM DO CÓDIGO
 #===========================================================
-# cd C:\Users\f282465\Projetos_Python\PRODUÇÃO\PROJETOS_GOV\app_gcc_gov_v2
-# cd C:\Atlas_Local\Diario_Bordo_APP\app_gcc_gov_v2
+# C:\Users\Z181040\OneDrive - Claro SA\BASES\Projetos_GOV\app_gcc_gov_v3
 # Ativar ambiente virtual: .venv\Scripts\activate 
 # Rodar o app: streamlit run app.py

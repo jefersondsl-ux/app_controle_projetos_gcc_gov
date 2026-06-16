@@ -62,7 +62,28 @@ def page_planilha_inteligente():
     # Ajustar apenas nomes de exibição para produção no relatório.
     df = df.rename(columns={
         "Circuitos_Producao": "Produção Mês Atual",
-        "Circuitos_Producao_Total": "Produção Total"
+        "Circuitos_Producao_Total": "Produção Total",
+        "DATA ASSINATURA CONTRATO": "Assinatura Contrato",
+        "DATA FINAL IMPLANTAÇÃO": "Prazo Contratual",
+        "VALOR CONTRATO": "Valor total do projeto",
+        "RECEITA MENSAL CONTRATUAL": "Receita Mensal Contratual",
+        "QTD PONTOS (CIRCUITOS)":"Qtd cctos Projeto",
+        "CCTOS CANCELADOS":"Cctos Cancelados / Suspensos",
+        "QTD CCTOS SOLICITADOS":"Qtd cctos Solicitados",
+        "IDP_PROJETO": "PJE",
+        "STATUS MACRO": "Status",
+        "CLIENTE": "Cliente / Projeto",
+        "TECNOLOGIA": "Tecnologia",
+        "BACKLOG_TOTAL": "Backlog Total",
+        "BACKLOG_GROSS": "Backlog Gross",
+        "BACKLOG_SERVICOS": "Backlog Serviços",
+        "BACKLOG_PJE": "Backlog PJE",
+        "BACKLOG_CLIENTE": "Backlog Cliente",
+        "BACKLOG_COMERCIAL": "Backlog Comercial",
+        "RECEITA_BACKLOG": "Receita Mensal Backlog",
+        "Receita_Producao": "Receita Produção",
+        "DATA_INICIAL_CADASTRO": "Data Inicial Cadastro",
+        "DATA_FINAL_CADASTRO": "Data Final Cadastro"
     })
 
     def _format_date(dt):
@@ -153,8 +174,8 @@ def page_planilha_inteligente():
     # =============================
 
     cols_controle = [
-        "IDP_PROJETO",
-        "PROJETO",
+        "PJE",
+        "Cliente / Projeto",
         "PROJETO_CARIMBO",
         "OVERVIEW",
         "IDP",
@@ -162,15 +183,17 @@ def page_planilha_inteligente():
         "GCC",
         "GP",
         "STATUS CADASTRO",
-        "STATUS MACRO",
-        "TECNOLOGIA",
-        "DATA ASSINATURA CONTRATO",
-        "DATA FINAL IMPLANTAÇÃO",
-        "VALOR CONTRATO",
-        "RECEITA MENSAL CONTRATUAL",
-        "QTD PONTOS (CIRCUITOS)",
-        "QTD CCTOS SOLICITADOS",
-        "CCTOS CANCELADOS",
+        "Status",
+        "Tecnologia",
+        "Assinatura Contrato",
+        "Prazo Contratual",
+        "Data Inicial Cadastro",
+        "Data Final Cadastro",
+        "Valor total do projeto",
+        "Receita Mensal Contratual",
+        "Qtd cctos Projeto",
+        "Qtd cctos Solicitados",
+        "Cctos Cancelados / Suspensos",
         "OBJETOS",
         "ORDEM"
     ]
@@ -178,17 +201,17 @@ def page_planilha_inteligente():
     cols_producao = [
         "Produção Mês Atual",
         "Produção Total",
-        "Receita_Producao"
+        "Receita Produção"
     ]
 
     cols_backlog = [
-        "BACKLOG_TOTAL",
-        "BACKLOG_GROSS",
-        "BACKLOG_SERVICOS",
-        "BACKLOG_PJE",
-        "BACKLOG_CLIENTE",
-        "BACKLOG_COMERCIAL",
-        "RECEITA_BACKLOG"
+        "Backlog Total",
+        "Backlog Gross",
+        "Backlog Serviços",
+        "Backlog PJE",
+        "Backlog Cliente",
+        "Backlog Comercial",
+        "Receita Mensal Backlog"
     ]
 
     cols_total = [

@@ -100,11 +100,10 @@ def render_header(kpis, mostrar_cards=True):
     html = f"""
     <div style="
         width: 100%;
-        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-        border-radius: 18px;
+        background: #262730;
+        border-radius: 12px;
         padding: 18px 22px;
         box-sizing: border-box;
-        border: 1px solid #e5e7eb;
         font-family: Arial, sans-serif;
     ">
         <div style="
@@ -118,13 +117,13 @@ def render_header(kpis, mostrar_cards=True):
                 align-items: center;
                 gap: 14px;
             ">
-                data:image/png;base64,{'''logo_base64'''}
+                <img src="data:image/png;base64,{logo_base64}" height="40">
 
                 <div>
                     <div style="
                         font-size: 24px;
                         font-weight: 800;
-                        color: #0f172a;
+                        color: #ffffff;
                         line-height: 1.1;
                     ">
                         Controle de Projetos GCC GOV
@@ -132,7 +131,7 @@ def render_header(kpis, mostrar_cards=True):
 
                     <div style="
                         font-size: 13px;
-                        color: #64748b;
+                        color: #94A3B8;
                         margin-top: 4px;
                     ">
                         Painel de acompanhamento gerencial e operacional

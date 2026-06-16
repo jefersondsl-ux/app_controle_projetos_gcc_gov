@@ -227,6 +227,44 @@ def construir_tabela_analitica(
     ]
 
     # =============================
+    # DATAS POR PROJETO (MENOR E MAIOR: BACKLOG + PRODUÇÃO)
+    # =============================
+
+    # backlog: min/max de DATA_ENTRADA_BACKLOG por projeto
+    if "DATA_ENTRADA_BACKLOG" in df_backlog.columns:
+        _bl = df_backlog[["IDP_PROJETO", "DATA_ENTRADA_BACKLOG"]].copy()
+        _bl["DATA_ENTRADA_BACKLOG"] = pd.to_datetime(_bl["DATA_ENTRADA_BACKLOG"], errors="coerce")
+        _bl_agg = (
+            _bl.groupby("IDP_PROJETO")
+            .agg(
+                _D_INI_BL=("DATA_ENTRADA_BACKLOG", "min"),
+                _D_FIN_BL=("DATA_ENTRADA_BACKLOG", "max"),
+            )
+            .reset_index()
+        )
+    else:
+        _bl_agg = pd.DataFrame(columns=["IDP_PROJETO", "_D_INI_BL", "_D_FIN_BL"])
+
+    # produção: min/max da coluna de data disponível
+    _prod_date_col = next(
+        (c for c in ["DATA_PRODUZIDO", "DATA_ULTIMA_ATIVACAO"] if c in df_producao.columns),
+        None
+    )
+    if _prod_date_col:
+        _pd = df_producao[["IDP_PROJETO", _prod_date_col]].copy()
+        _pd[_prod_date_col] = pd.to_datetime(_pd[_prod_date_col], errors="coerce")
+        _pd_agg = (
+            _pd.groupby("IDP_PROJETO")
+            .agg(
+                _D_INI_PD=(_prod_date_col, "min"),
+                _D_FIN_PD=(_prod_date_col, "max"),
+            )
+            .reset_index()
+        )
+    else:
+        _pd_agg = pd.DataFrame(columns=["IDP_PROJETO", "_D_INI_PD", "_D_FIN_PD"])
+
+    # =============================
     # UNIR NA DIMENSÃO (BASE DA PLANILHA = CONTROLE)
     # =============================
 
@@ -293,7 +331,24 @@ def construir_tabela_analitica(
         .merge(diario_proj, on="IDP_PROJETO", how="left")
         .merge(df_pivot_obs, on="IDP_PROJETO", how="left")
         .merge(df_pivot_data_obs, on="IDP_PROJETO", how="left")
+        .merge(_bl_agg, on="IDP_PROJETO", how="left")
+        .merge(_pd_agg, on="IDP_PROJETO", how="left")
     )
+
+    # consolidar datas de cadastro
+    for _c in ["_D_INI_BL", "_D_INI_PD", "_D_FIN_BL", "_D_FIN_PD"]:
+        if _c in df.columns:
+            df[_c] = pd.to_datetime(df[_c], errors="coerce")
+
+    _cols_ini = [c for c in ["_D_INI_BL", "_D_INI_PD"] if c in df.columns]
+    _cols_fin = [c for c in ["_D_FIN_BL", "_D_FIN_PD"] if c in df.columns]
+
+    if _cols_ini:
+        df["DATA_INICIAL_CADASTRO"] = df[_cols_ini].min(axis=1)
+    if _cols_fin:
+        df["DATA_FINAL_CADASTRO"] = df[_cols_fin].max(axis=1)
+
+    df = df.drop(columns=["_D_INI_BL", "_D_FIN_BL", "_D_INI_PD", "_D_FIN_PD"], errors="ignore")
 
     # =============================
     # TRATAR NULOS
@@ -392,6 +447,10 @@ def construir_tabela_analitica(
         "BACKLOG_CLIENTE",
         "BACKLOG_COMERCIAL",
         "RECEITA_BACKLOG",
+
+        # DATAS CADASTRO
+        "DATA_INICIAL_CADASTRO",
+        "DATA_FINAL_CADASTRO",
 
         # (opcional compatibilidade)
         "Circuitos_Backlog",
@@ -492,7 +551,9 @@ def construir_tabela_analitica(
 
     colunas_data = [
         "DATA ASSINATURA CONTRATO",
-        "DATA FINAL IMPLANTAÇÃO"
+        "DATA FINAL IMPLANTAÇÃO",
+        "DATA_INICIAL_CADASTRO",
+        "DATA_FINAL_CADASTRO"
     ]
 
     # incluir datas das etapas

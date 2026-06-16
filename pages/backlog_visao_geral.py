@@ -458,6 +458,7 @@ def page_backlog_visao_geral():
             "ESTRATEGIA": "Estratégia\nde Redes",
             "DELTA_RECEITA_ESTRATEGIA": "Receita\nEstratégia",
             "REGRA_COMERCIAL_ESTRATEGIA": "Regra\nComercial\nEstratégia",
+            "RECEITA": "Receita",
             "PRODUCAO_CIRCUITOS": "Produção\nQtd",
             "FORECAST_INICIO_MES": "Forecast\nInício Mês\n(Qtd)",
             "FORECAST_REGRA_COMERCIAL": "Regra\nComercial",
@@ -1148,133 +1149,132 @@ def page_backlog_visao_geral():
 
             for col_def in original_defs_geral:
                 field = col_def.get("field")
+                field_norm = re.sub(r"[ \t\u00A0]+", " ", str(field or "").strip())
 
-                if field == "TOTAL":
+                if field_norm == "TOTAL":
                     child = col_def.copy()
                     child["headerName"] = "Qtd"
                     child["headerClass"] = "header-total-backlog-child"
                     total_backlog_children.append(child)
-                elif field == "Regra Comercial\nTotal":
+                elif field_norm == "Regra Comercial\nTotal":
                     child = col_def.copy()
                     child["headerName"] = "Regra"
                     child["headerClass"] = "header-total-backlog-child"
                     total_backlog_children.append(child)
-                elif field == "Receita\nGeral":
+                elif field_norm == "Receita\nGeral":
                     child = col_def.copy()
                     child["headerName"] = "Receita"
                     child["headerClass"] = "header-total-backlog-child"
                     total_backlog_children.append(child)
-                elif field == "PRODUCAO_CIRCUITOS":
+                elif field_norm == "PRODUCAO_CIRCUITOS":
                     child = col_def.copy()
                     child["headerName"] = "Qtd"
                     child["headerClass"] = "header-producao-child"
                     production_children.append(child)
-                elif field == "RECEITA":
-                    child = col_def.copy()
-                    child["headerName"] = "Receita"
-                    child["headerClass"] = "header-producao-child"
-                    production_children.append(child)
-                elif field == "GROSS":
+                elif field_norm in ["RECEITA", "Receita"]:
+                    # Esconder coluna de receita extra apenas na Visão Geral
+                    continue
+                elif field_norm == "GROSS":
                     child = col_def.copy()
                     child["headerName"] = "Qtd"
                     child["headerClass"] = "header-gross-child"
                     grupos_hierarquicos["GROSS"].append(child)
-                elif field == "Regra Comercial\nGross":
+                elif field_norm == "Regra Comercial\nGross":
                     child = col_def.copy()
                     child["headerName"] = "Regra"
                     child["headerClass"] = "header-gross-child"
                     grupos_hierarquicos["GROSS"].append(child)
-                elif field == "Receita\nGross":
+                elif field_norm == "Receita\nGross":
                     child = col_def.copy()
                     child["headerName"] = "Receita"
                     child["headerClass"] = "header-gross-child"
                     grupos_hierarquicos["GROSS"].append(child)
-                elif field == "SERVIÇO":
+                elif field_norm == "SERVIÇO":
                     child = col_def.copy()
                     child["headerName"] = "Qtd"
                     child["headerClass"] = "header-servico-child"
                     grupos_hierarquicos["SERVIÇO"].append(child)
-                elif field == "Regra Comercial\nServiço":
+                elif field_norm == "Regra Comercial\nServiço":
                     child = col_def.copy()
                     child["headerName"] = "Regra"
                     child["headerClass"] = "header-servico-child"
                     grupos_hierarquicos["SERVIÇO"].append(child)
-                elif field == "Receita\nServiço":
+                elif field_norm == "Receita\nServiço":
                     child = col_def.copy()
                     child["headerName"] = "Receita"
                     child["headerClass"] = "header-servico-child"
                     grupos_hierarquicos["SERVIÇO"].append(child)
-                elif field == "OUTROS":
+                elif field_norm == "OUTROS":
                     child = col_def.copy()
                     child["headerName"] = "Qtd"
                     child["headerClass"] = "header-outros-child"
                     grupos_hierarquicos["OUTROS"].append(child)
-                elif field == "Regra Comercial\nOutros":
+                elif field_norm == "Regra Comercial\nOutros":
                     child = col_def.copy()
                     child["headerName"] = "Regra"
                     child["headerClass"] = "header-outros-child"
                     grupos_hierarquicos["OUTROS"].append(child)
-                elif field == "Receita\nOutros":
+                elif field_norm == "Receita\nOutros":
                     child = col_def.copy()
                     child["headerName"] = "Receita"
                     child["headerClass"] = "header-outros-child"
                     grupos_hierarquicos["OUTROS"].append(child)
-                elif field == "INTERNET":
+                elif field_norm == "INTERNET":
                     child = col_def.copy()
                     child["headerName"] = "Qtd"
                     child["headerClass"] = "header-internet-child"
                     grupos_hierarquicos["INTERNET"].append(child)
-                elif field == "Regra Comercial\nInternet":
+                elif field_norm == "Regra Comercial\nInternet":
                     child = col_def.copy()
                     child["headerName"] = "Regra"
                     child["headerClass"] = "header-internet-child"
                     grupos_hierarquicos["INTERNET"].append(child)
-                elif field == "Receita\nInternet":
+                elif field_norm == "Receita\nInternet":
                     child = col_def.copy()
                     child["headerName"] = "Receita"
                     child["headerClass"] = "header-internet-child"
                     grupos_hierarquicos["INTERNET"].append(child)
-                elif field == "DADOS":
+                elif field_norm == "DADOS":
                     child = col_def.copy()
                     child["headerName"] = "Qtd"
                     child["headerClass"] = "header-dados-child"
                     grupos_hierarquicos["DADOS"].append(child)
-                elif field == "Regra Comercial\nDados":
+                elif field_norm == "Regra Comercial\nDados":
                     child = col_def.copy()
                     child["headerName"] = "Regra"
                     child["headerClass"] = "header-dados-child"
                     grupos_hierarquicos["DADOS"].append(child)
-                elif field == "Receita\nDados":
+                elif field_norm == "Receita\nDados":
                     child = col_def.copy()
                     child["headerName"] = "Receita"
                     child["headerClass"] = "header-dados-child"
                     grupos_hierarquicos["DADOS"].append(child)
-                elif field == "VOZ":
+                elif field_norm == "VOZ":
                     child = col_def.copy()
                     child["headerName"] = "Qtd"
                     child["headerClass"] = "header-voz-child"
                     grupos_hierarquicos["VOZ"].append(child)
-                elif field == "Regra Comercial\nVoz":
+                elif field_norm == "Regra Comercial\nVoz":
                     child = col_def.copy()
                     child["headerName"] = "Regra"
                     child["headerClass"] = "header-voz-child"
                     grupos_hierarquicos["VOZ"].append(child)
-                elif field == "Receita\nVoz":
+                elif field_norm == "Receita\nVoz":
                     child = col_def.copy()
                     child["headerName"] = "Receita"
                     child["headerClass"] = "header-voz-child"
                     grupos_hierarquicos["VOZ"].append(child)
-                elif field == "WIFI":
+                elif field_norm == "WIFI":
                     child = col_def.copy()
                     child["headerName"] = "Qtd"
                     child["headerClass"] = "header-wifi-child"
                     grupos_hierarquicos["WIFI"].append(child)
-                elif field == "Regra Comercial\nWiFi":
+                elif field_norm == "Regra Comercial\nWiFi":
                     child = col_def.copy()
                     child["headerName"] = "Regra"
                     child["headerClass"] = "header-wifi-child"
                     grupos_hierarquicos["WIFI"].append(child)
-                elif field == "Receita\nWiFi":
+                elif field_norm == "Receita\nWiFi":
                     child = col_def.copy()
                     child["headerName"] = "Receita"
                     child["headerClass"] = "header-wifi-child"
@@ -1372,56 +1372,65 @@ def page_backlog_visao_geral():
             sem_carimbo_child = None
             for col_def in original_defs:
                 field = col_def.get("field")
-                if field in ["Estratégia\nde Redes", "Regra\nComercial\nEstratégia", "Receita\nEstratégia"]:
+                field_norm = re.sub(r"[ \t\u00A0]+", " ", str(field or "").strip())
+                if field_norm in ["Estratégia\nde Redes", "Regra\nComercial\nEstratégia", "Receita\nEstratégia"]:
                     child = col_def.copy()
-                    if field == "Estratégia\nde Redes":
+                    if field_norm == "Estratégia\nde Redes":
                         child["headerName"] = "Qtd"
-                    elif field == "Regra\nComercial\nEstratégia":
+                    elif field_norm == "Regra\nComercial\nEstratégia":
                         child["headerName"] = "Regra"
-                    elif field == "Receita\nEstratégia":
+                    elif field_norm == "Receita\nEstratégia":
                         child["headerName"] = "Receita"
                     strategy_children.append(child)
-                elif field in ["Forecast\nInício Mês\n(Qtd)", "Regra\nComercial", "Receita\nForecast"]:
+                elif field_norm in ["Forecast\nInício Mês\n(Qtd)", "Regra\nComercial", "Receita\nForecast"]:
                     child = col_def.copy()
-                    if field == "Forecast\nInício Mês\n(Qtd)":
+                    if field_norm == "Forecast\nInício Mês\n(Qtd)":
                         child["headerName"] = "Qtd"
-                    elif field == "Regra\nComercial":
+                    elif field_norm == "Regra\nComercial":
                         child["headerName"] = "Regra"
-                    elif field == "Receita\nForecast":
+                    elif field_norm == "Receita\nForecast":
                         child["headerName"] = "Receita"
                     forecast_inicio_children.append(child)
-                elif re.match(r"^[A-Za-zÀ-ÿ]+/\d{4}$", str(field)) or field in ["Outros Meses", "A ajustar", "A definir"]:
+                elif re.match(r"^[A-Za-zÀ-ÿ]+/\d{4}$", str(field)) or field_norm in ["Outros Meses", "A ajustar", "A definir"]:
                     child = col_def.copy()
                     forecast_children.append(child)
-                elif field in ["Backlog\nAtual\n(Qtd)", "Regra\nComercial\nBacklog", "Receita\nBacklog"]:
+                elif field_norm in ["Backlog\nAtual\n(Qtd)", "Regra\nComercial\nBacklog", "Receita\nBacklog"]:
                     child = col_def.copy()
-                    if field == "Backlog\nAtual\n(Qtd)":
+                    if field_norm == "Backlog\nAtual\n(Qtd)":
                         child["headerName"] = "Qtd"
-                    elif field == "Regra\nComercial\nBacklog":
+                    elif field_norm == "Regra\nComercial\nBacklog":
                         child["headerName"] = "Regra"
-                    elif field == "Receita\nBacklog":
+                    elif field_norm == "Receita\nBacklog":
                         child["headerName"] = "Receita"
                     backlog_children.append(child)
-                elif field in ["Produção\nQtd", "Receita"]:
+                elif field_norm in ["Produção\nQtd", "Receita", "RECEITA"]:
                     child = col_def.copy()
-                    if field == "Produção\nQtd":
+                    if field_norm == "Produção\nQtd":
                         child["headerName"] = "Qtd"
                     else:
                         child["headerName"] = "Receita"
                     production_children.append(child)
-                elif field in ["Cliente", "Vendas", "PJE"]:
+                elif field_norm in ["Cliente", "Vendas", "PJE"]:
                     child = col_def.copy()
                     pendencias_children.append(child)
-                elif field == "S/ Carimbo":
+                elif field_norm == "S/ Carimbo":
                     child = col_def.copy()
                     child["headerName"] = "S/ Carimbo"
                     sem_carimbo_children.append(child)
-                elif field == "Dias S/ Carimbo":
+                elif field_norm == "Dias S/ Carimbo":
                     child = col_def.copy()
                     child["headerName"] = "Dias S/ Carimbo"
                     sem_carimbo_children.append(child)
                 else:
                     ungrouped_defs.append(col_def)
+
+            # Garantir que não haja colunas extras de Receita fora do grupo Produção
+            ungrouped_defs = [
+                col_def for col_def in ungrouped_defs
+                if re.sub(r"[ \t\u00A0]+", " ", str(col_def.get("field") or "").strip())
+                not in ["Receita", "RECEITA"]
+            ]
+
             new_defs = []
             new_defs.extend(ungrouped_defs)
             if forecast_inicio_children:
@@ -1466,6 +1475,15 @@ def page_backlog_visao_geral():
                     "children": sem_carimbo_children
                 }
                 new_defs.append(sem_carimbo_group_def)
+
+            # Filtro de segurança: remover qualquer coluna Receita/RECEITA que
+            # tenha escapado para o nível superior (fora do grupo Produção)
+            new_defs = [
+                d for d in new_defs
+                if "children" in d or re.sub(
+                    r"[ \t\u00A0]+", " ", str(d.get("field") or "").strip()
+                ) not in ["Receita", "RECEITA"]
+            ]
             grid_options_estrategia["columnDefs"] = new_defs
 
         # Configurar auto-sizing baseado na documentação do AgGrid
@@ -1490,7 +1508,6 @@ def page_backlog_visao_geral():
                     "TOTAL",
                     "Regra Comercial\nTotal",
                     "Produção\nQtd",
-                    "Receita",
                     "GROSS",
                     "Regra Comercial\nGross",
                     "Receita\nGross",
